@@ -1,11 +1,24 @@
 import hyperneat
 import random
 
+def rankdist(d1,d2):
+ sz = len(d1)
+ d = 0 
+ for k in xrange(sz):
+  d+=abs(d1[k]-d2[k])
+ return d
+
+def get_ranks(a1):
+  ranks=zip(a1,range(len(a1)))
+  ranks.sort()
+  a,ranks=zip(*ranks)
+  return ranks
+
 class feature_critic:
  def __init__(self):
    pass
  def evaluate_artist(self,a):
-   avg= hyperneat.feature_detector.chop(a,20)
+   avg=hyperneat.feature_detector.chop(a,6)
    #avg= (hyperneat.feature_detector.compression(a) + hyperneat.feature_detector.wavelet(a))/2
    #avg=hyperneat.feature_detector.wavelet(a)
    return avg
@@ -71,7 +84,8 @@ class objective:
   return new
 
 def herit_measure(h):
- return 1.0
+ h1,h2=zip(*h)
+ return rankdist(get_ranks(h1),get_ranks(h2))
 
 def fuss_create_new_pop(oldpop,evalf):
  herit=[] 
@@ -80,30 +94,38 @@ def fuss_create_new_pop(oldpop,evalf):
  tot_size=len(newpop) 
  for k in range(50): 
   fits = [k.fitness for k in newpop]
-  rval = random.random()
+  minf=min(fits)
+  maxf=max(fits)
+  rval = random.uniform(minf-0.01,maxf+0.01)
+
   j=0
   while(j<(tot_size-1) and newpop[j].fitness>rval):
    j+=1
   oldfit = newpop[j].fitness
+
   new=make_new(newpop[j])
   evalf(new)
+
   newfit = new.fitness
   herit.append((oldfit,newfit))
- 
-  j=0
-  worst_sc=10000.0
-  worst=None
-  while j<(tot_size-1):
-   sc=fits[j]-fits[j+1]
-   #print sc,worst_sc
-   if(sc<worst_sc):
-    worst_sc=sc
-    worst=j
-   j+=1
-  del newpop[worst]
 
-  newpop.append(new)
-  newpop.sort(key=lambda k:k.fitness,reverse=True)
+  if(newfit!=-100):
+   j=0
+   worst_sc=10000.0
+   worst=None
+   while j<(tot_size-1):
+    sc=fits[j]-fits[j+1]
+    #print sc,worst_sc
+    if(sc<worst_sc):
+     worst_sc=sc
+     worst=j
+    j+=1
+   del newpop[worst]
+  
+   newpop.append(new)
+   newpop.sort(key=lambda k:k.fitness,reverse=True)
+  else:
+   print "rejected"
  del oldpop
  print "Heritability:",herit_measure(herit)
  return newpop

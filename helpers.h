@@ -18,5 +18,14 @@ double inline mod_af(double* x,int cnt);
 double inline sigmoid_af(double* x,int cnt);
 double inline linear_af(double* x,int cnt);
 double inline sin_af(double* x,int cnt);
+
+void generate_luts();
+extern double *sin_lut;//[LUT_SIZE];
+extern double *gauss_lut;//[LUT_SIZE];
+double inline sin_af_approx(double* x,int cnt);
+double inline gaussian_af_approx(double*x,int cnt);
+double inline sigmoid_approx(double s);
+double inline sigmoid_af_approx(double* x,int cnt);
+
 #endif
 

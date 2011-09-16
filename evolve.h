@@ -210,10 +210,71 @@ static double chop(artist* a,int range=5) {
 }
 
 static double compression(artist*a) {
+ char dest[SX*SY*2];
+ char src[SX*SY];
+ unsigned char *src_ptr=(unsigned char*)src;
+ double *buf_ptr=a->buffer;
+ unsigned int destLen = sizeof(dest);
+ unsigned int srcLen = sizeof(src);
+ for(int i=0;i<SX*SY;i++)
+ {
+  src_ptr[i]=(unsigned char)(buf_ptr[i]*255.0);
+ }
 
+ BZ2_bzBuffToBuffCompress(dest,&destLen,src,srcLen,9,0,30);
+ double comp=(((double)srcLen-(double)destLen)/(double)srcLen);
+ return comp;
 }
 
-static double wavelet(artist*a) { }
+static double wavelet(artist*a) { 
+   int i, n = SX*SY;
+      double *data = (double*)malloc (n * sizeof (double));
+       double *abscoeff = (double*)malloc (n * sizeof (double));
+       size_t *p = (size_t*)malloc (n * sizeof (size_t));
+       
+       memcpy(data,a->buffer,sizeof(double)*SX*SY);
+
+       gsl_wavelet *w;
+       gsl_wavelet_workspace *work;
+     
+       w = gsl_wavelet_alloc (gsl_wavelet_daubechies, 4);
+       work = gsl_wavelet_workspace_alloc (n);
+     
+       gsl_wavelet2d_transform_forward (w, data, SX, SX,SY, work);
+     
+       for (i = 0; i < n; i++)
+         {
+           abscoeff[i] = fabs (data[i]);
+         }
+       
+       gsl_sort_index (p, abscoeff, 1, n);
+
+       double total=0.0;
+       
+       for (i = 0; i< n; i++) {
+        total+=abscoeff[p[i]];
+       }
+
+       double target=0.95*total;
+
+       double accum=0.0;
+       for(i=n-1; i>=0; i--)
+       {
+	accum+=abscoeff[p[i]];
+        if(accum>target)
+         break;
+       }       
+
+	double compression= ((double)i) / ((double)n);
+       //gsl_wavelet2d_transform_inverse (w, data, SX, SX,SY, work);
+       
+       gsl_wavelet_free (w);
+       gsl_wavelet_workspace_free (work);
+       free (data);
+       free (abscoeff);
+       free (p);
+    return compression;
+}
 
 };
 

@@ -32,10 +32,11 @@ class Singleton
 			COMPAT_THRESH=2.0;
 			TARGET_SPECIES=8;
 			innovation=100;
-			af.push_back(sigmoid_af);
+                        generate_luts();
+			af.push_back(sigmoid_af_approx);
 			af.push_back(abs_af);
-			af.push_back(gaussian_af);
-			af.push_back(sin_af);
+			af.push_back(gaussian_af_approx);
+			af.push_back(sin_af_approx);
 			cout << "In Ctor" << endl; }
         ~Singleton() { cout << "In Dtor" << endl; }
 

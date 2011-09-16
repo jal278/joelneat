@@ -109,7 +109,7 @@ while(not quit):
  cur_obj.evolve()
  #if(optimize):
   #for z in xrange(50):
-   #cur_obj.artists[0].optimize(dummy)
+  #cur_obj.artists[0].optimize(dummy)
    #cur_obj.artists[k].optimize(cur_obj.critic)
  for k in range(16):
   if(render_art):

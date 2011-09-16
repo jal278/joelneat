@@ -50,13 +50,6 @@ for k in range(50):
  new_critic.fitness=0
  critic_pop.append(new_critic)
 
-def rankdist(d1,d2):
- sz = len(d1)
- d = 0 
- for k in xrange(sz):
-  d+=abs(d1[k]-d2[k])
- return d
-
 def make_new(ind):
  child=ind.copy()
  if(random.random()>0.2):
