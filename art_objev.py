@@ -101,14 +101,18 @@ while(not quit):
 
  #now select objectives 
  objectives=multiobjective_select(objectives)
- cur_obj=objectives[0]
+ arts=[k.artists[0] for k in objectives[:16]]
  
  gs=4
  #if(optimize):
-  #for z in xrange(50):
+  #for z in xrange(50)`:
   #cur_obj.artists[0].optimize(dummy)
    #cur_obj.artists[k].optimize(cur_obj.critic)
    
+ for k in range(16):
+  if(not arts[k].isrendered()):
+   arts[k].render_picture()
+  render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,arts[k].get_picture())
  if(render):
   screen.blit(background,(0,0))
   pygame.display.flip()
