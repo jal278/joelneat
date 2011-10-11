@@ -1,4 +1,5 @@
 #include "evolve.h"
+double bigbuff[LARGESX*LARGESY];
 /*
  void artist::optimize(evaluator* e) {
   double oldscore = e->evaluate_artist(this);

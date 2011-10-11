@@ -106,7 +106,6 @@ optimize=False
 while(not quit):
  cur_obj = objectives[cur_obj_num]
  gs=4
- cur_obj.evolve()
  #if(optimize):
   #for z in xrange(50):
   #cur_obj.artists[0].optimize(dummy)

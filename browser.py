@@ -58,9 +58,10 @@ artists = []
 
 import sys
 
+path=sys.argv[2]
 load_gen=int(sys.argv[1])
 import glob
-arts=glob.glob("generation%d/art*"%load_gen)
+arts=glob.glob("%s/generation%d/art*"%(path,load_gen))
 for k in arts:
  newartist=hyperneat.artist()
  newartist.load(k)

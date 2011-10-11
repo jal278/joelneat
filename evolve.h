@@ -12,6 +12,8 @@ using namespace std;
 #define SX 64
 #define SY 64
 
+#define LARGESX 512
+#define LARGESY 512
 #include <bzlib.h>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_sort.h>
@@ -20,7 +22,7 @@ using namespace std;
 
 class evaluator;
 
-
+extern double bigbuff[LARGESX*LARGESY];
 class artist {
 public:
  bool rendered;
@@ -40,7 +42,15 @@ public:
  int complexity() {
   return orig->complexity();
  }
+ const char* save_xml() {
+  return orig->save_xml();
+ }
 
+ void load_xml(const char* xml_string) {
+  delete orig;
+  orig = CPPN::load_xml(xml_string);
+ }
+ 
  void save(const char *fname) {
   orig->save(fname);
  }
@@ -55,8 +65,10 @@ public:
         rendered=false;
         vector<int> r1;
 	vector<int> r2;
-	r1.push_back(25);
-	r1.push_back(25);
+	r1.push_back(1);
+	r1.push_back(1);
+	r1.push_back(1);
+	r1.push_back(1);
         s = new Substrate(r1,true,false,false,0);
 	t = new Substrate(r2,false,true,false,1);
         orig= new CPPN(s,t,10,false);
@@ -89,6 +101,25 @@ public:
     PyList_SetItem(ret,y,row);
    }
   return ret;
+ }
+
+ PyObject *get_big() {
+  int offset=0;
+  PyObject* ret = PyList_New(LARGESY);
+   for(int y=0;y<LARGESY;y++) {
+    PyObject *row = PyList_New(LARGESX);
+    for(int x=0;x<LARGESX;x++) {
+      PyList_SetItem(row,x,PyFloat_FromDouble(bigbuff[offset]));
+      offset++;
+    }
+    PyList_SetItem(ret,y,row);
+   }
+  return ret;
+ }
+
+ double* render_big() {
+  gen_buffer(bigbuff,orig,LARGESX,LARGESY);
+  return bigbuff;
  }
 
  double* render_picture() {
@@ -200,11 +231,12 @@ return gsl_stats_sd(block,1,size*size);
 static double chop(artist* a,int range=5) {
  double sum=0.0;
  double* buffer = a->buffer;
- double count = (SX-range)*(SY-range);
  int step=range/2;
  if(step==0) step=1;
+ double count = ((SX-range) / step)*((SY-range)/step);
+
  for(int i=0;i<SX-range;i+=step) 
-  for(int j=0;j<SY-range;j++)
+  for(int j=0;j<SY-range;j+=step)
    sum+=std_block(buffer,i,j,range); 
  return sum/count;
 }
@@ -225,6 +257,32 @@ static double compression(artist*a) {
  double comp=(((double)srcLen-(double)destLen)/(double)srcLen);
  return comp;
 }
+static double symmetry_x(artist* a) {
+double sum=0.0;
+double* buffer = a->buffer;
+for(int x=0;x<SX;x++)
+ for(int y=0;y<SY/2;y++)
+  {
+  double delta=buffer[y*SX+x]-buffer[(SY-y-1)*SX+x];
+  delta*=delta;
+  sum+=delta; //absd(buffer[y*SX+x]-buffer[(SY-y)*SX+x]);
+  }
+return 1.0-(sum/(SX*SY/2));
+}
+
+static double symmetry_y(artist* a) {
+double sum=0.0;
+double* buffer = a->buffer;
+for(int x=0;x<SX/2;x++)
+ for(int y=0;y<SY;y++)
+  {
+  double delta=buffer[y*SX+x]-buffer[y*SX+(SX-x-1)];
+  delta*=delta;
+  sum+=delta; //absd(buffer[y*SX+x]-buffer[y*SX+(SX-x)]);
+  }
+return 1.0-(sum/(SX*SY/2));
+}
+
 
 static double wavelet(artist*a) { 
    int i, n = SX*SY;

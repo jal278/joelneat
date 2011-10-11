@@ -1,7 +1,8 @@
 #include <cstdlib>
 #include <vector>
 #include <math.h>
-#define LUT_SIZE 1000
+#include <iostream>
+#define LUT_SIZE 2048
 #define PI 3.1415926535
 using namespace std;
 
@@ -79,7 +80,7 @@ double mod_af(double* x,int cnt)
 double sin_af(double* x,int cnt)
 {
     double s=sum(x,cnt);
-    return sin(s);	
+    return sin(s*2.5);	
 }
 
 double linear_af(double* x,int cnt)
@@ -130,4 +131,13 @@ return 1.0/(1.0+tmp);
 double sigmoid_af_approx(double* x,int cnt) {
 	double s=sum(x,cnt);
 	return 2.0*sigmoid_approx(s)-1.0; 
+}
+
+void test_shit() {
+ double x[2]= {-4.0,0.0};
+ double step=0.01;
+ while(x[0]<4.0) {
+ cout << x[0] << " " << gaussian_af_approx(x,2) << endl;
+ x[0]+=step;
+ }
 }

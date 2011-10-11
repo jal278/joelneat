@@ -22,8 +22,8 @@ if(render):
  screen.blit(background, (0, 0))
  pygame.display.flip()
 
-SX=SY=32
-PXS = 4
+SX=SY=64
+PXS = 2
 
 def render_picture(x,y,pxsize,data):
  global render,screen,background,SX,SY
@@ -35,21 +35,27 @@ def render_picture(x,y,pxsize,data):
    px=min(px,255)
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
- 
+
+print "a1" 
 a=hyperneat.artist()
 a.random_seed()
 art_pop = []
 critic_pop = []
+print "a2" 
 
 for k in range(400):
+ print k
  new_art=hyperneat.artist()
  new_art.fitness=0
  art_pop.append(new_art)
+
+print "a3" 
 for k in range(50):
  new_critic=critic_class()
  new_critic.fitness=0
  critic_pop.append(new_critic)
 
+print "a4" 
 def make_new(ind):
  child=ind.copy()
  if(random.random()>0.2):
@@ -62,32 +68,11 @@ def save_pop(pop,fname):
   k.save(fname%count)
   count+=1
 
-def create_new_pop(oldpop,delete=0.2):
- fit_sum=sum([k.fitness for k in oldpop])
- com_sum=sum([k.complexity() for k in oldpop])
- print "fitness: ", fit_sum
- print "complexity: ", com_sum
- newpop=[]
- size=len(oldpop)
- oldpop.sort(key=lambda x:x.fitness)
- remove=int(delete*len(oldpop))
- oldpop=oldpop[remove:]
- for k in oldpop:
-  new = make_new(k)
-  new.fitness=0
-  newpop.append(new)
- for k in range(remove):
-  new = make_new(random.choice(oldpop))
-  new.fitness=0
-  newpop.append(new)
- del oldpop
- return newpop
-
 gen=0
 while(True):
  print "generation:" ,gen
  gen+=1
- critic_lifespan=5
+ critic_lifespan=10
  print "rendering art"
  for art in art_pop:
   art.render_picture()
@@ -95,6 +80,7 @@ while(True):
   art.ranks=[]
   art.best=0
   art.worst=10000
+  art.selected=None
  print "critiquing art"
  for crit in critic_pop:
   ranks=[]
@@ -114,6 +100,7 @@ while(True):
    art.ranks.append(k)
    if(art.best<k):
     art.best=k
+    art.selected=crit
    if(art.worst>k):
     art.worst=k
  print "calculating fitness"

@@ -4,6 +4,7 @@
 using namespace std;
 
 
+void test_shit();
 typedef double(*activation_function)(double* x,int cnt);
 double inline absd(double d);
 double inline randfloat();

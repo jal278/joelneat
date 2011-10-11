@@ -1,6 +1,16 @@
 import hyperneat
 import random
+import pickle
 
+def herit_measure(h):
+ h1,h2=zip(*h)
+ return rankdist(get_ranks(h1),get_ranks(h2))
+
+def create_rankings(vals):
+ ranks=zip(vals,range(len(vals)))
+ ranks.sort()
+ a,ranks=zip(*ranks)
+ return ranks
 def rankdist(d1,d2):
  sz = len(d1)
  d = 0 
@@ -14,13 +24,13 @@ def get_ranks(a1):
   a,ranks=zip(*ranks)
   return ranks
 
-class feature_critic:
+class feature_critic_frozen:
  def __init__(self):
    pass
  def evaluate_artist(self,a):
-   avg=hyperneat.feature_detector.chop(a,6)
+   #avg=hyperneat.feature_detector.average(a) #chop(a,3)
    #avg= (hyperneat.feature_detector.compression(a) + hyperneat.feature_detector.wavelet(a))/2
-   #avg=hyperneat.feature_detector.wavelet(a)
+   avg=hyperneat.feature_detector.symmetry_x(a)+hyperneat.feature_detector.symmetry_y(a)-hyperneat.feature_detector.compression(a)
    return avg
  def mutate(self):
    pass
@@ -33,6 +43,80 @@ class feature_critic:
  def load(self,fn):
    pass
 
+class novelty_mapper:
+ def __init__(self):
+  self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y]
+ def evaluate_artist(self,a):
+  return map(lambda k:k(a),self.features)
+
+class feature_critic:
+ def __init__(self):
+   self.names=["avg","compression","wavelet","std","chop","sym_x","sym_y"]
+   self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y]
+   self.active=[]
+   self.weights=[]
+   self.targets=[]
+   self.add_feature()
+ def add_feature(self):
+   self.active.append(random.choice(self.features))
+   self.targets.append(random.uniform(0.0,1.0))
+   self.weights.append(random.uniform(0.0,3.0)) 
+ def del_feature(self):
+   if(len(self.active)>1):
+    to_rem=random.randint(0,len(self.active)-1)
+    del self.active[to_rem]
+    del self.weights[to_rem]
+    del self.targets[to_rem]
+ def evaluate_artist(self,a):
+   fit=0.0
+   for k in range(len(self.active)):
+    fit+= (1.0 - abs(self.active[k](a)-self.targets[k]))*self.weights[k] #chop(a,3)
+   return fit
+ def mutate_feature(self):
+   to_mutate=random.randint(0,len(self.weights)-1)
+   if(random.random()<0.5):
+    self.weights[to_mutate]+=random.uniform(-0.5,0.5) 
+    if(self.weights[to_mutate]>3.0):
+     self.weights[to_mutate]=3.0
+    if(self.weights[to_mutate]<0.0):
+     self.weights[to_mutate]=0.0
+   else:
+    self.targets[to_mutate]+=random.uniform(-0.2,0.2)
+    if(self.targets[to_mutate]>1.0):
+     self.targets[to_mutate]=1.0
+    if(self.targets[to_mutate]<0.0):
+     self.targets[to_mutate]=0.0
+ def mutate(self):
+   if(random.random()<0.1):
+    if(random.random()<0.7): #add new
+     self.add_feature()
+    else:
+     self.del_feature()
+   elif(random.random()<0.6):
+     self.mutate_feature()
+ def copy(self):
+   new=feature_critic()
+   new.weights=self.weights[:]
+   new.active=self.active[:]
+   new.targets=self.targets[:]
+   return new
+ def complexity(self):
+   return len(self.active)
+ def save(self,fn):
+   a=open(fn,"w")
+   pickle.dump(self,a)
+ def load(self,fn):
+   new=pickle.load(open(fn))
+   self.weights=new.weights
+   self.active=new.active
+   self.targets=new.targets
+ def to_string(self):
+  return pickle.dumps(self)
+ def from_string(self,string):
+   new=pickle.loads(string)
+   self.weights=new.weights
+   self.active=new.active
+   self.targets=new.targets
 critic_class = feature_critic
 #critic_class = hyperneat.evaluator
 
@@ -51,7 +135,8 @@ def load_objective(size,gen,n):
  return a
 
 class objective:
- def __init__(self,size):
+ def __init__(self,size,evals):
+  self.evol_length=evals
   self.artists=[]
   self.critic=critic_class()
   self.size=size
@@ -71,36 +156,97 @@ class objective:
    k.clear_picture()
 
  def evolve(self):
-  for k in range(5):
-   self.artists = fuss_create_new_pop(self.artists,self.evalind)
-   self.evaluate()
+  self.artists,self.herit = fuss_create_new_pop(self.artists,self.evalind,self.evol_length)
  def mutate(self):
   self.critic.mutate()
  def copy(self):
-  new = objective(self.size)
+  new = objective(self.size,self.evol_length)
   for k in range(self.size):
    new.artists[k]=self.artists[k].copy()
   new.critic=self.critic.copy()
   return new
+ def save(self,fn):
+  self.artist_xml=[]
+  for k in self.artists:
+   self.artist_xml.append(k.save_xml())
+  self.critic_str=self.critic.to_string()
+  a=open(fn,"w")
+  pickle.dump(self,a) 
+ def load(self,fn):
+  a=open(fn,"r")
+  new=pickle.load(self,a)
+   
+def multiobjective_select(pop):
+ num_objectives=len(pop[0].objectives)
+ rankings=[]
+ avg=[]
+ for k in range(num_objectives):
+  avg.append(sum([l.objectives[k] for l in pop])/len(pop))
+  rankings.append(create_rankings([l.objectives[k] for l in pop]))
 
-def herit_measure(h):
- h1,h2=zip(*h)
- return rankdist(get_ranks(h1),get_ranks(h2))
+ print "avg:", " ".join([str(x) for x in avg])
 
-def fuss_create_new_pop(oldpop,evalf):
+ newpop=[]
+ poplen=len(pop)
+ thresh=int(len(pop)*0.7)
+ for k in range(len(pop)):
+  obj=random.randint(0,num_objectives-1)
+  repro=rankings[obj][random.randint(0,thresh-1)]
+  newpop.append(make_new(pop[repro]))
+ return newpop
+
+def create_new_pop(oldpop,evalf,count=50):
  herit=[] 
 
  newpop=oldpop[:]
  tot_size=len(newpop) 
- for k in range(50): 
+
+ fits = [k.fitness for k in newpop]
+ #print "range ",maxf,minf,maxf-minf
+
+ for k in range(count): 
+  fits = [k.fitness for k in newpop]
+ 
+  #right now any individual is eligble for reproduction
+  #perhaps restrict later 
+  new=make_new(random.choice(newpop))
+  evalf(new)
+
+  newfit = new.fitness
+  herit.append((oldfit,newfit))
+
+  if(newfit!=-100):
+   newpop.append(new)
+   newpop.sort(key=lambda k:k.fitness,reverse=True)
+   #delete worst
+   del newpop[-1]
+  else:
+   print "rejected"
+ del oldpop
+ return newpop,herit
+
+def fuss_create_new_pop(oldpop,evalf,count=50):
+ herit=[] 
+
+ newpop=oldpop[:]
+ tot_size=len(newpop) 
+
+ fits = [k.fitness for k in newpop]
+ minf=min(fits)
+ maxf=max(fits)
+ #print "range ",maxf,minf,maxf-minf
+
+ for k in range(count): 
   fits = [k.fitness for k in newpop]
   minf=min(fits)
   maxf=max(fits)
   rval = random.uniform(minf-0.01,maxf+0.01)
-
+ 
   j=0
   while(j<(tot_size-1) and newpop[j].fitness>rval):
    j+=1
+  if(j>0 and abs(newpop[j].fitness-rval)>abs(newpop[j-1].fitness-rval)):
+   j-=1
   oldfit = newpop[j].fitness
 
   new=make_new(newpop[j])
@@ -127,8 +273,7 @@ def fuss_create_new_pop(oldpop,evalf):
   else:
    print "rejected"
  del oldpop
- print "Heritability:",herit_measure(herit)
- return newpop
+ return newpop,herit
 
 def make_new(ind):
  child=ind.copy()

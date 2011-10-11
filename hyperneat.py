@@ -86,6 +86,10 @@ class feature_detector(_object):
     if _newclass:compression = staticmethod(_hyperneat.feature_detector_compression)
     __swig_getmethods__["wavelet"] = lambda x: _hyperneat.feature_detector_wavelet
     if _newclass:wavelet = staticmethod(_hyperneat.feature_detector_wavelet)
+    __swig_getmethods__["symmetry_x"] = lambda x: _hyperneat.feature_detector_symmetry_x
+    if _newclass:symmetry_x = staticmethod(_hyperneat.feature_detector_symmetry_x)
+    __swig_getmethods__["symmetry_y"] = lambda x: _hyperneat.feature_detector_symmetry_y
+    if _newclass:symmetry_y = staticmethod(_hyperneat.feature_detector_symmetry_y)
     def __init__(self): 
         this = _hyperneat.new_feature_detector()
         try: self.this.append(this)
@@ -123,6 +127,14 @@ def feature_detector_wavelet(*args):
   return _hyperneat.feature_detector_wavelet(*args)
 feature_detector_wavelet = _hyperneat.feature_detector_wavelet
 
+def feature_detector_symmetry_x(*args):
+  return _hyperneat.feature_detector_symmetry_x(*args)
+feature_detector_symmetry_x = _hyperneat.feature_detector_symmetry_x
+
+def feature_detector_symmetry_y(*args):
+  return _hyperneat.feature_detector_symmetry_y(*args)
+feature_detector_symmetry_y = _hyperneat.feature_detector_symmetry_y
+
 class artist(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, artist, name, value)
@@ -133,6 +145,8 @@ class artist(_object):
     def clear_picture(self): return _hyperneat.artist_clear_picture(self)
     def save(self, *args): return _hyperneat.artist_save(self, *args)
     def load(self, *args): return _hyperneat.artist_load(self, *args)
+    def save_xml(self): return _hyperneat.artist_save_xml(self)
+    def load_xml(self, *args): return _hyperneat.artist_load_xml(self, *args)
     def complexity(self): return _hyperneat.artist_complexity(self)
     def random_seed(self): return _hyperneat.artist_random_seed(self)
     def __init__(self): 
@@ -145,6 +159,8 @@ class artist(_object):
     def render_picture(self): return _hyperneat.artist_render_picture(self)
     def isrendered(self): return _hyperneat.artist_isrendered(self)
     def mutate(self): return _hyperneat.artist_mutate(self)
+    def render_big(self): return _hyperneat.artist_render_big(self)
+    def get_big(self): return _hyperneat.artist_get_big(self)
     def get_picture(self): return _hyperneat.artist_get_picture(self)
 artist_swigregister = _hyperneat.artist_swigregister
 artist_swigregister(artist)

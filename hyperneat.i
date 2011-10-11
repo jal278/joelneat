@@ -13,6 +13,8 @@ static double kurtosis(artist* a);
 static double chop(artist*a,int r=1);
 static double compression(artist*a);
 static double wavelet(artist*a);
+static double symmetry_x(artist*a);
+static double symmetry_y(artist*a);
 };
 
 class artist {
@@ -21,6 +23,8 @@ class artist {
   void clear_picture();
   void save(const char*fn);
   void load(const char*fn);
+  const char* save_xml();
+  void load_xml(const char*txt);
   int complexity();
   void random_seed();
   artist();
@@ -29,6 +33,8 @@ class artist {
   double* render_picture();
   bool isrendered();
   void mutate();
+  double* render_big();
+  PyObject* get_big();
   PyObject* get_picture();
 };
 
