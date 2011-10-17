@@ -46,9 +46,11 @@ public:
   return orig->save_xml();
  }
 
- void load_xml(const char* xml_string) {
-  delete orig;
-  orig = CPPN::load_xml(xml_string);
+ static artist* load_xml(const char* xml_string) {
+  artist* newart=new artist();
+  delete newart->orig;
+  newart->orig= CPPN::load_xml(xml_string);
+  return newart;
  }
  
  void save(const char *fname) {

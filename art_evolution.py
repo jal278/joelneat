@@ -36,12 +36,10 @@ def render_picture(x,y,pxsize,data):
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
 
-print "a1" 
 a=hyperneat.artist()
 a.random_seed()
 art_pop = []
 critic_pop = []
-print "a2" 
 
 for k in range(400):
  print k
@@ -49,13 +47,11 @@ for k in range(400):
  new_art.fitness=0
  art_pop.append(new_art)
 
-print "a3" 
 for k in range(50):
  new_critic=critic_class()
  new_critic.fitness=0
  critic_pop.append(new_critic)
 
-print "a4" 
 def make_new(ind):
  child=ind.copy()
  if(random.random()>0.2):

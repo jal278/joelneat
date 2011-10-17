@@ -991,6 +991,8 @@ public:
 							nodes,connections,trivial_weight);
 		return k;
 	}
+
+        TiXmlPrinter printer;
         const char* save_xml() 
         {
 	TiXmlElement* stuff=create_xml();
@@ -998,7 +1000,6 @@ public:
 	TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );  
 	doc.LinkEndChild(decl);
 	doc.LinkEndChild(stuff);
-        TiXmlPrinter printer;
         doc.Accept(&printer);
         return printer.CStr();
         }

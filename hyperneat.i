@@ -24,7 +24,7 @@ class artist {
   void save(const char*fn);
   void load(const char*fn);
   const char* save_xml();
-  void load_xml(const char*txt);
+  static artist* load_xml(const char*txt);
   int complexity();
   void random_seed();
   artist();

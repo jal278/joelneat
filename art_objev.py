@@ -1,5 +1,6 @@
 #import scipy.stats
 #from scipy.stats.stats import kendalltau
+import os
 import hyperneat
 import random
 from guppy import hpy
@@ -64,15 +65,28 @@ import sys
 objectives=[]
 
 obj_popsize=50
-art_popsize=20
-evals=150
+art_popsize=10
+evals=100
+debug=False
+quit=False
+
+out_dir="obj3"
+gen=0
+print_out=50
+
+if debug:
+ obj_popsize=16
+ art_popsize=10
+ evals=10
+ print_out=1
 
 for k in range(obj_popsize):
  newobj=objective(art_popsize,evals)
  objectives.append(newobj)
 
-quit=False
 while(not quit):
+ gen+=1
+ print "generation ", gen
  print "evolving pictures for objectives"
  #evolve objectives for a bit
  for k in objectives:
@@ -96,8 +110,17 @@ while(not quit):
   dists.sort(reverse=True)
   k.novelty += sum(dists[:15])
   k.heritability = -herit_measure(k.herit) 
-  k.objectives=[k.novelty,k.heritability]
+  k.objectives=[k.novelty] #,k.heritability]
   #print k.novelty,k.heritability
+ 
+ if((gen-1)%print_out==0):
+  print "saving progress..."
+  os.system("mkdir %s/gen_%d" % (out_dir,gen))
+  
+  counter=0
+  for k in objectives:
+   k.save("%s/gen_%d/obj%d.dat" % (out_dir,gen,counter))
+   counter+=1
 
  #now select objectives 
  objectives=multiobjective_select(objectives)
@@ -112,7 +135,8 @@ while(not quit):
  for k in range(16):
   if(not arts[k].isrendered()):
    arts[k].render_picture()
-  render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,arts[k].get_picture())
+  if(not arts[k].get_nanflag()):
+   render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,arts[k].get_picture())
  if(render):
   screen.blit(background,(0,0))
   pygame.display.flip()

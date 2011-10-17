@@ -49,7 +49,12 @@ class novelty_mapper:
  def evaluate_artist(self,a):
   return map(lambda k:k(a),self.features)
 
-class feature_critic:
+class feature_critic:  
+ def __str__(self):
+   string=""
+   for k in range(len(self.active)):
+    string+=str((self.active[k],self.targets[k],self.weights[k]))+"\n"
+   return string
  def __init__(self):
    self.names=["avg","compression","wavelet","std","chop","sym_x","sym_y"]
    self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y]
@@ -112,11 +117,12 @@ class feature_critic:
    self.targets=new.targets
  def to_string(self):
   return pickle.dumps(self)
- def from_string(self,string):
+
+ @staticmethod
+ def from_string(string):
    new=pickle.loads(string)
-   self.weights=new.weights
-   self.active=new.active
-   self.targets=new.targets
+   return new
+
 critic_class = feature_critic
 #critic_class = hyperneat.evaluator
 
@@ -165,17 +171,35 @@ class objective:
    new.artists[k]=self.artists[k].copy()
   new.critic=self.critic.copy()
   return new
+ def __str__(self):
+  return str(self.critic)
  def save(self,fn):
   self.artist_xml=[]
   for k in self.artists:
-   self.artist_xml.append(k.save_xml())
+   artist_xml = k.save_xml()
+   self.artist_xml.append(artist_xml)
   self.critic_str=self.critic.to_string()
   a=open(fn,"w")
   pickle.dump(self,a) 
- def load(self,fn):
+
+ @staticmethod
+ def load(fn):
   a=open(fn,"r")
-  new=pickle.load(self,a)
-   
+  new=pickle.load(a)
+  new.artists=[]
+  new.critic=critic_class.from_string(new.critic_str)
+  #print new
+  for k in new.artist_xml:
+   if k!='':
+    new.artists.append(hyperneat.artist.load_xml(k))
+  return new
+
+ def __getstate__(self):
+  odict = self.__dict__.copy()
+  del odict['artists']
+  del odict['critic']
+  return odict
+
 def multiobjective_select(pop):
  num_objectives=len(pop[0].objectives)
  rankings=[]
@@ -193,6 +217,15 @@ def multiobjective_select(pop):
   obj=random.randint(0,num_objectives-1)
   repro=rankings[obj][random.randint(0,thresh-1)]
   newpop.append(make_new(pop[repro]))
+ return newpop
+
+def create_new_pop_gen(oldpop,rate=0.3):
+ newpop=[]
+ oldpop.sort(key=lambda k:k.fitness)
+ eligpop=oldpop[int(rate*len(oldpop)):]
+ for k in range(len(oldpop)):
+  new=make_new(random.choice(eligpop))
+  newpop.append(new)
  return newpop
 
 def create_new_pop(oldpop,evalf,count=50):
