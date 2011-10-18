@@ -35,7 +35,7 @@ public:
  bool get_nanflag() {
   return orig->nanflag;
  }
- void random_seed() {
+ static void random_seed() {
   srand ( time(NULL) );
  }
 
@@ -52,11 +52,15 @@ public:
   newart->orig= CPPN::load_xml(xml_string);
   return newart;
  }
+ static artist* load(const char *fname) {
+  artist* k = new artist(CPPN::load(fname));
+  return k;
+ }
  
  void save(const char *fname) {
   orig->save(fname);
  }
- void load(const char *fname) {
+ void load_new(const char *fname) {
   delete orig;
   orig = CPPN::load(fname);
  }
@@ -75,6 +79,10 @@ public:
 	t = new Substrate(r2,false,true,false,1);
         orig= new CPPN(s,t,10,false);
         orig->change();
+ }
+ artist(CPPN* cppn) {
+  rendered=false;
+  orig=cppn;
  }
 
  artist* copy() {

@@ -22,11 +22,12 @@ class artist {
   bool get_nanflag();
   void clear_picture();
   void save(const char*fn);
-  void load(const char*fn);
+  void load_new(const char*fn);
   const char* save_xml();
+  static artist* load(const char*fn);
   static artist* load_xml(const char*txt);
   int complexity();
-  void random_seed();
+  static void random_seed();
   artist();
   ~artist();
   artist* copy();

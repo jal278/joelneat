@@ -144,12 +144,15 @@ class artist(_object):
     def get_nanflag(self): return _hyperneat.artist_get_nanflag(self)
     def clear_picture(self): return _hyperneat.artist_clear_picture(self)
     def save(self, *args): return _hyperneat.artist_save(self, *args)
-    def load(self, *args): return _hyperneat.artist_load(self, *args)
+    def load_new(self, *args): return _hyperneat.artist_load_new(self, *args)
     def save_xml(self): return _hyperneat.artist_save_xml(self)
+    __swig_getmethods__["load"] = lambda x: _hyperneat.artist_load
+    if _newclass:load = staticmethod(_hyperneat.artist_load)
     __swig_getmethods__["load_xml"] = lambda x: _hyperneat.artist_load_xml
     if _newclass:load_xml = staticmethod(_hyperneat.artist_load_xml)
     def complexity(self): return _hyperneat.artist_complexity(self)
-    def random_seed(self): return _hyperneat.artist_random_seed(self)
+    __swig_getmethods__["random_seed"] = lambda x: _hyperneat.artist_random_seed
+    if _newclass:random_seed = staticmethod(_hyperneat.artist_random_seed)
     def __init__(self): 
         this = _hyperneat.new_artist()
         try: self.this.append(this)
@@ -166,9 +169,17 @@ class artist(_object):
 artist_swigregister = _hyperneat.artist_swigregister
 artist_swigregister(artist)
 
+def artist_load(*args):
+  return _hyperneat.artist_load(*args)
+artist_load = _hyperneat.artist_load
+
 def artist_load_xml(*args):
   return _hyperneat.artist_load_xml(*args)
 artist_load_xml = _hyperneat.artist_load_xml
+
+def artist_random_seed():
+  return _hyperneat.artist_random_seed()
+artist_random_seed = _hyperneat.artist_random_seed
 
 class evaluator(_object):
     __swig_setmethods__ = {}

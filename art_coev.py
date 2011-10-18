@@ -8,7 +8,7 @@ from guppy import hpy
 import pygame
 import gc
 from art_basics import *
-
+from art_coev_basics import *
 #gc.set_debug(gc.DEBUG_LEAK | gc.DEBUG_STATS)
 render=True
 #PYGAME SETUP
@@ -36,46 +36,36 @@ def render_picture(x,y,pxsize,data):
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
 
-a=hyperneat.artist()
-a.random_seed()
+hyperneat.artist.random_seed()
 
-nectar_pop = []
-nectarless_pop = []
-critic_pop = []
-direc="coev3"
-for k in range(100):
- print k
- new_art=hyperneat.artist()
- new_art.fitness=0
- nectar_pop.append(new_art)
- new_art=hyperneat.artist()
- new_art.fitness=0
- nectarless_pop.append(new_art)
-
-for k in range(100):
- new_critic=critic_class()
- new_critic.fitness=0
- critic_pop.append(new_critic)
-
-def make_new(ind):
- child=ind.copy()
- if(random.random()>0.2):
-  child.mutate()
- return child
-
-def save_pop(pop,fname):
- count=0
- for k in pop:
-  k.save(fname%count)
-  count+=1
+direc="coev2"
+nectar_pop,nectarless_pop,critic_pop= ([],[],[])
+if(False):
+ load_dir=direc+"/generation800/"
+ nectar_pop=load_pop(load_dir+"nart%d",100,hyperneat.artist)
+ nectarless_pop=load_pop(load_dir+"art%d",100,hyperneat.artist)
+ critic_pop=load_pop(load_dir+"crit%d",100,critic_class)
+else:
+ nectar_pop,nectarless_pop = create_flowers(100)
+ critic_pop = create_critics(100)
 
 gen=0
+migrate=0.01
+migrate_count=3
+cycle_len=5
+ART=0
+CRITIC=1
+cycle=ART
 while(True):
  print "generation:" ,gen
  gen+=1
- print "rendering art"
+
+ print "starting."  
+ if(cycle==ART):
+  print "rendering art"
  for art in nectar_pop:
-  art.render_picture()
+  if(not art.isrendered()):
+   art.render_picture()
   art.fitness=0.0
   art.ranks=[]
   art.best=0
@@ -93,6 +83,9 @@ while(True):
   art.selected=None
 
  total_pop=nectar_pop+nectarless_pop
+
+ random.shuffle(total_pop)
+
  print "critiquing art"
  for crit in critic_pop:
   ranks=[]
@@ -141,10 +134,16 @@ while(True):
   #crit.fitness = random.random()
 
  nectar_pop.sort(key=lambda k:k.fitness,reverse=True)
- print "nectar total:" , sum([k.fitness for k in nectar_pop])
+ nec_tot =  sum([k.fitness for k in nectar_pop])
  nectarless_pop.sort(key=lambda k:k.fitness,reverse=True)
- print "nectarless_total:" , sum([k.fitness for k in nectarless_pop])
-
+ nonec_tot = sum([k.fitness for k in nectarless_pop])
+ ratio = float(nec_tot)/float(nonec_tot)
+ print "nec:" , nec_tot
+ print nectar_pop[0].mapped
+ print "no nec:", nonec_tot
+ print nectarless_pop[0].mapped
+ print "ratio:" , ratio
+ print critic_pop[0]
  gs=4
  for k in range(16):
   total_pop=nectar_pop[:8]+nectarless_pop[:8]
@@ -162,9 +161,32 @@ while(True):
   save_pop(critic_pop,cfname)
   save_pop(nectar_pop,afname)
   save_pop(nectarless_pop,afname2)
- critic_pop = create_new_pop_gen(critic_pop,0.3)
- nectar_pop = create_new_pop_gen(nectar_pop,0.3)
- nectarless_pop = create_new_pop_gen(nectarless_pop,0.3)
+
+ if(gen%cycle_len==0):
+  if(cycle==ART):
+   cycle=CRITIC
+  else:
+   cycle=ART
+
+ if(cycle==CRITIC):
+  print "critic reproduction"
+  critic_pop = create_new_pop_gen(critic_pop,0.3)
+ else:
+  print "artist reproduction"
+  #migration
+  new_migrate=migrate
+  if(ratio>2):
+   new_migrate*=10
+  if random.random()<new_migrate:
+   print "migrating..."
+   for k in range(migrate_count):
+    del nectarless_pop[-1]
+   for k in range(migrate_count):
+    nectarless_pop.insert(0,nectar_pop[k].copy())
+    nectarless_pop[0].fitness=100000
+  #new pops
+  nectar_pop = create_new_pop_gen(nectar_pop,0.3)
+  nectarless_pop = create_new_pop_gen(nectarless_pop,0.3)
 
 for k in art_pop:
  del k

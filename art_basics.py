@@ -53,7 +53,7 @@ class feature_critic:
  def __str__(self):
    string=""
    for k in range(len(self.active)):
-    string+=str((self.active[k],self.targets[k],self.weights[k]))+"\n"
+    string+=str((self.features[self.active[k]],self.targets[k],self.weights[k]))+"\n"
    return string
  def __init__(self):
    self.names=["avg","compression","wavelet","std","chop","sym_x","sym_y"]
@@ -63,7 +63,24 @@ class feature_critic:
    self.targets=[]
    self.add_feature()
  def add_feature(self):
-   self.active.append(random.choice(self.features))
+   tries=5
+   feature=None
+   #make sure we are not duplicating an existing feature
+   found=None
+   for k in range(tries):
+    feature = random.randint(0,len(self.features)-1)
+    found=False
+    for a in self.active:
+     if a==feature:
+      found=True
+      break
+    if found:
+     continue
+    else:
+     break
+   if found:
+    return
+   self.active.append(feature)
    self.targets.append(random.uniform(0.0,1.0))
    self.weights.append(random.uniform(0.0,3.0)) 
  def del_feature(self):
@@ -72,19 +89,32 @@ class feature_critic:
     del self.active[to_rem]
     del self.weights[to_rem]
     del self.targets[to_rem]
+ def map_all(self,a):
+  vals=[]
+  for k in self.features:
+   vals.append(k(a))
+  a.mapped=vals
+  return vals
+
  def evaluate_artist(self,a):
+   vals=[]
+   if not hasattr(a,'mapped'):
+    vals=self.map_all(a)
+   else:
+    vals=a.mapped
+
    fit=0.0
    for k in range(len(self.active)):
-    fit+= (1.0 - abs(self.active[k](a)-self.targets[k]))*self.weights[k] #chop(a,3)
+    fit+= (1.0 - abs(vals[self.active[k]]-self.targets[k]))*self.weights[k] #chop(a,3)
    return fit
  def mutate_feature(self):
    to_mutate=random.randint(0,len(self.weights)-1)
-   if(random.random()<0.5):
-    self.weights[to_mutate]+=random.uniform(-0.5,0.5) 
+   if(True):
+    self.weights[to_mutate]+=random.uniform(-0.3,0.3) 
     if(self.weights[to_mutate]>3.0):
      self.weights[to_mutate]=3.0
-    if(self.weights[to_mutate]<0.0):
-     self.weights[to_mutate]=0.0
+    if(self.weights[to_mutate]<0.01):
+     self.weights[to_mutate]=0.01
    else:
     self.targets[to_mutate]+=random.uniform(-0.2,0.2)
     if(self.targets[to_mutate]>1.0):
@@ -97,7 +127,7 @@ class feature_critic:
      self.add_feature()
     else:
      self.del_feature()
-   elif(random.random()<0.6):
+   elif(random.random()<0.5):
      self.mutate_feature()
  def copy(self):
    new=feature_critic()
@@ -117,6 +147,11 @@ class feature_critic:
    self.targets=new.targets
  def to_string(self):
   return pickle.dumps(self)
+
+ @staticmethod
+ def load(fn):
+  new=pickle.load(open(fn))
+  return new
 
  @staticmethod
  def from_string(string):
