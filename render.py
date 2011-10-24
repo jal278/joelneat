@@ -8,18 +8,18 @@ nm = novelty_mapper()
 load_gen=int(sys.argv[1])
 import glob
 from PIL import Image
-arts=glob.glob("generation%d/art*"%load_gen)
+arts=glob.glob("ns/generation%d/art*"%load_gen)
+count=0
 for k in arts:
+ count+=1
+ print count
+
+def render(in_fname,out_fname):
  newartist=hyperneat.artist()
- newartist.load(k)
+ newartist.load(in_fname)
  newartist.render_big()
  obj=newartist.get_big()
- for x in range(len(obj)):
-  for y in range(len(obj[x])):
-   val=obj[x][y]
-   val*=255
-   val=int(val)
-   obj[x][y]=val
  out=Image.fromarray(numpy.array(obj))
  out=out.convert("RGB")
- out.save("render/%s.jpg" % k)
+ out.save(out_fname)
+

@@ -38,7 +38,7 @@ def render_picture(x,y,pxsize,data):
 
 hyperneat.artist.random_seed()
 
-direc="coev2"
+direc="coev1"
 nectar_pop,nectarless_pop,critic_pop= ([],[],[])
 if(False):
  load_dir=direc+"/generation800/"
@@ -52,7 +52,7 @@ else:
 gen=0
 migrate=0.01
 migrate_count=3
-cycle_len=5
+cycle_len=10
 ART=0
 CRITIC=1
 cycle=ART

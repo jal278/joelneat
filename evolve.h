@@ -119,7 +119,9 @@ public:
    for(int y=0;y<LARGESY;y++) {
     PyObject *row = PyList_New(LARGESX);
     for(int x=0;x<LARGESX;x++) {
-      PyList_SetItem(row,x,PyFloat_FromDouble(bigbuff[offset]));
+      int val = (int)(bigbuff[offset]*255.0);
+      PyList_SetItem(row,x,PyInt_FromLong(val));
+      //PyList_SetItem(row,x,PyFloat_FromDouble(bigbuff[offset]));
       offset++;
     }
     PyList_SetItem(ret,y,row);
