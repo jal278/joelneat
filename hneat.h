@@ -583,7 +583,15 @@ public:
 		//add the new connection
 		connections.push_back(k);
 	}
-
+        void make_random() {
+         int new_nodes = randint(0,6);
+         int new_links = randint(0,10);
+         for(int k=0;k<new_nodes;k++)       
+		 mutate_add_node();
+         for(int k=0;k<new_links;k++)
+	 	mutate_add_link();
+         change();
+	}
 	void change()
 	{
 		for(int x=0;x<connections.size();x++)

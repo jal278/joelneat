@@ -98,6 +98,13 @@ public:
  void mutate() {
   orig->mutate(); 
  }
+ void make_random() {
+  orig->make_random();
+ }
+
+ void change() {
+  orig->change();
+ }
 
  PyObject *get_picture() {
   int offset=0;

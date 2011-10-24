@@ -163,6 +163,8 @@ class artist(_object):
     def render_picture(self): return _hyperneat.artist_render_picture(self)
     def isrendered(self): return _hyperneat.artist_isrendered(self)
     def mutate(self): return _hyperneat.artist_mutate(self)
+    def change(self): return _hyperneat.artist_change(self)
+    def make_random(self): return _hyperneat.artist_make_random(self)
     def render_big(self): return _hyperneat.artist_render_big(self)
     def get_big(self): return _hyperneat.artist_get_big(self)
     def get_picture(self): return _hyperneat.artist_get_picture(self)

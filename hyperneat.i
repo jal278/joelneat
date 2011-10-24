@@ -34,6 +34,8 @@ class artist {
   double* render_picture();
   bool isrendered();
   void mutate();
+  void change();
+  void make_random();
   double* render_big();
   PyObject* get_big();
   PyObject* get_picture();
