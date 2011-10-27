@@ -40,14 +40,18 @@ hyperneat.artist.random_seed()
 
 direc="coev1"
 nectar_pop,nectarless_pop,critic_pop= ([],[],[])
+
+critic_pop_size=200
+flower_pop_size=200
+
 if(False):
  load_dir=direc+"/generation800/"
- nectar_pop=load_pop(load_dir+"nart%d",100,hyperneat.artist)
- nectarless_pop=load_pop(load_dir+"art%d",100,hyperneat.artist)
- critic_pop=load_pop(load_dir+"crit%d",100,critic_class)
+ nectar_pop=load_pop(load_dir+"nart%d",flower_pop_size,hyperneat.artist)
+ nectarless_pop=load_pop(load_dir+"art%d",flower_pop_size,hyperneat.artist)
+ critic_pop=load_pop(load_dir+"crit%d",critic_pop_size,critic_class)
 else:
- nectar_pop,nectarless_pop = create_flowers(100)
- critic_pop = create_critics(100)
+ nectar_pop,nectarless_pop = create_flowers(flower_pop_size)
+ critic_pop = create_critics(critic_pop_size)
 
 gen=0
 migrate=0.01

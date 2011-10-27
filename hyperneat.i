@@ -19,6 +19,7 @@ static double symmetry_y(artist*a);
 
 class artist {
  public:
+  double distance(artist*a);
   bool get_nanflag();
   void clear_picture();
   void save(const char*fn);

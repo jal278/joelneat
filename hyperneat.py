@@ -141,6 +141,7 @@ class artist(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, artist, name)
     __repr__ = _swig_repr
+    def distance(self, *args): return _hyperneat.artist_distance(self, *args)
     def get_nanflag(self): return _hyperneat.artist_get_nanflag(self)
     def clear_picture(self): return _hyperneat.artist_clear_picture(self)
     def save(self, *args): return _hyperneat.artist_save(self, *args)

@@ -498,14 +498,14 @@ public:
 		
 		int c1size=c1->connections.size();
 		int c2size=c2->connections.size();
-		
 		int c1max=c1->connections[c1size-1]->innovation;
 		int c2max=c2->connections[c2size-1]->innovation;
-
+		
 		while(c1index<c1size && c2index<c2size)
 		{
 			c1inno=c1->connections[c1index]->innovation;
 			c2inno=c2->connections[c2index]->innovation;
+			//cout << "c1: " <<c1inno << " " << "c2: " <<c2inno <<endl;
 			if(c1inno==c2inno)
 			{
 				matching++;
@@ -538,7 +538,7 @@ public:
 		{
 			weight_dif/=matching;
 		}
-		// cout << weight_dif << "-" << matching << endl;
+		// cout << "wd: " << weight_dif << " mtch:" << matching << " exc:" << excess << " dj:" << disjoint << endl;
 		return weight_dif*3.0+excess*2.0+disjoint*1.0;
 	}
 
@@ -1027,30 +1027,31 @@ public:
 		vector<Node*> n;
 		vector<Connection*> c;
 
+		int temp_inno = 0;
 
 		n.reserve(10);
 		c.reserve(10);
 
 		//add inputs for each dimension of source & target substrate
 		for(int x=0;x<source->dim;x++)
-			n.push_back(new Node(true,false,false,0,Singleton::next_inno()));
+			n.push_back(new Node(true,false,false,0,temp_inno++));
 
 		for(int x=0;x<target->dim;x++)
-			n.push_back(new Node(true,false,false,0,Singleton::next_inno()));
+			n.push_back(new Node(true,false,false,0,temp_inno++));
 
 		//add bias
-		n.push_back(new Node(false,false,true,0,Singleton::next_inno()));
+		n.push_back(new Node(false,false,true,0,temp_inno++));
                 int num_outputs=2;	
 		//add output
 		for(int x=0;x<num_outputs;x++)
-		n.push_back(new Node(false,true,false,0,Singleton::next_inno()));
+		n.push_back(new Node(false,true,false,0,temp_inno++));
 
 		//add connections
 		int tot_dim=source->dim+target->dim;
 		for(int x=0;x<(tot_dim+1);x++)
 		{
 			for(int y=0;y<num_outputs;y++) {
-			c.push_back(new Connection(n[x],n[tot_dim+1+y],0.0,Singleton::next_inno()));
+			c.push_back(new Connection(n[x],n[tot_dim+1+y],0.0,temp_inno++));
 			c[x*num_outputs+y]->mutate(true);
 			}	
 		}

@@ -2,6 +2,55 @@ import hyperneat
 import random
 import pickle
 
+#class for speciation, normalizes fitness by species size
+#TODO: does not handle species elitism yet though
+class Speciator:
+ def __init__(self,threshold,target):
+  self.threshold=threshold
+  self.species=[]
+  self.species_dir=dict()
+  self.target=target
+
+ def add_new_species(self,ind):
+  self.species.append([ind,])
+  self.species_dir[ind]=self.species[-1]
+
+ def add_to_species(self,ind,species):
+  species.append(ind)
+  self.species_dir[ind]=species
+
+ def speciate(self,population):
+  self.species=[]
+  self.species_dir=dict()
+  
+  for k in population:
+   k.raw_fitness=k.fitness
+   found=False
+   for s in self.species:
+    if s[0].distance(k)<self.threshold:
+     self.add_to_species(k,s)
+     found=True
+     break
+   if not found:
+    self.add_new_species(k)
+   
+  #sort species by fitness to get easy access to champs
+  #then normalize fitness by species size 
+  for s in self.species:
+   s.sort(key=lambda k:k.fitness,reverse=True)
+   spec_size = len(s)
+   for ind in s:
+    ind.fitness/=spec_size
+  
+  if len(self.species)<self.target:
+   self.threshold*=0.9
+  elif len(self.species)>self.target:
+   self.threshold*=1.1
+  
+  print "species: ", len(self.species)
+
+
+
 def herit_measure(h):
  h1,h2=zip(*h)
  return rankdist(get_ranks(h1),get_ranks(h2))
@@ -45,9 +94,10 @@ class feature_critic_frozen:
 
 class novelty_mapper:
  def __init__(self):
-  self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y]
+  self.critic = feature_critic()
  def evaluate_artist(self,a):
-  return map(lambda k:k(a),self.features)
+  #return map(lambda k:k(a),self.features)
+  return self.critic.map_all(a)
 
 class feature_critic:  
  def __str__(self):
@@ -56,8 +106,8 @@ class feature_critic:
     string+=str((self.features[self.active[k]],self.targets[k],self.weights[k]))+"\n"
    return string
  def __init__(self):
-   self.names=["avg","compression","wavelet","std","chop","sym_x","sym_y"]
-   self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y]
+   self.names=["avg","compression","wavelet","std","sym_x","sym_y","chop"]
+   self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y,hyperneat.feature_detector.chop]
    self.active=[]
    self.weights=[]
    self.targets=[]
@@ -95,6 +145,11 @@ class feature_critic:
    vals.append(k(a))
   a.mapped=vals
   return vals
+ def evaluate_map(self,m):
+   fit=0.0
+   for k in range(len(self.active)):
+    fit+= (1.0 - abs(m[self.active[k]]-self.targets[k]))*self.weights[k] #chop(a,3)
+   return fit
 
  def evaluate_artist(self,a):
    vals=[]
@@ -102,11 +157,8 @@ class feature_critic:
     vals=self.map_all(a)
    else:
     vals=a.mapped
+   return self.evaluate_map(vals)
 
-   fit=0.0
-   for k in range(len(self.active)):
-    fit+= (1.0 - abs(vals[self.active[k]]-self.targets[k]))*self.weights[k] #chop(a,3)
-   return fit
  def mutate_feature(self):
    to_mutate=random.randint(0,len(self.weights)-1)
    if(True):
@@ -121,6 +173,7 @@ class feature_critic:
      self.targets[to_mutate]=1.0
     if(self.targets[to_mutate]<0.0):
      self.targets[to_mutate]=0.0
+
  def mutate(self):
    if(random.random()<0.1):
     if(random.random()<0.7): #add new

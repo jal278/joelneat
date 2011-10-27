@@ -9,11 +9,14 @@ import sys
 evals = int(sys.argv[1])
 outfile = sys.argv[2]
 fc = feature_critic() 
-out = open(outfile,"w")
+outstr=""
+
 for x in range(evals):
  artist=hyperneat.artist()
  artist.make_random()
  artist.render_picture()
  vals = fc.map_all(artist)
- outstring= " ".join(map(str,vals))+"\n"
- out.write(outstring)
+ outstr += " ".join(map(str,vals))+"\n"
+
+out = open(outfile,"w")
+out.write(outstr)

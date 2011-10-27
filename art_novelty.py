@@ -1,10 +1,7 @@
-#import scipy.stats
-#from scipy.stats.stats import kendalltau
 import numpy
 import os
 import hyperneat
 import random
-from guppy import hpy
 
 import pygame
 import gc
@@ -37,8 +34,7 @@ def render_picture(x,y,pxsize,data):
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
 
-a=hyperneat.artist()
-a.random_seed()
+hyperneat.artist.random_seed()
 art_pop = []
 nov_crit = novelty_mapper()
 
@@ -112,7 +108,7 @@ while(True):
   screen.blit(background,(0,0))
   pygame.display.flip()
  if((gen)%50==0):
-  directory="generation%d"%gen
+  directory="ns4/generation%d"%gen
   os.system("mkdir %s" % directory)
   afname = directory+"/art%d"
   save_pop(art_pop,afname)

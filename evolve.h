@@ -39,6 +39,10 @@ public:
   srand ( time(NULL) );
  }
 
+ double distance(artist* other) {
+  return orig->distance((individual*)other->orig); 
+ }
+
  int complexity() {
   return orig->complexity();
  }

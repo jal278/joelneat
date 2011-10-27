@@ -31,7 +31,7 @@ class Singleton
         Singleton()  { 
 			COMPAT_THRESH=2.0;
 			TARGET_SPECIES=8;
-			innovation=100;
+			innovation=200;
                         generate_luts();
 			//test_shit();
 			af.push_back(sigmoid_af_approx);
