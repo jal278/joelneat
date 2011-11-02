@@ -9,10 +9,11 @@ nm = novelty_mapper()
 load_gen=int(sys.argv[1])
 import glob
 from PIL import Image
-arts=glob.glob("ns/generation%d/art*"%load_gen)
+arts=glob.glob("coev1_e/generation%d/art*"%load_gen)
 count=0
 for k in arts:
  count+=1
+ render(k,"render"+str(count)+".png")
  print count
 
 def render(in_fname,out_fname):

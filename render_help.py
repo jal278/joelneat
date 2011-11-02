@@ -1,3 +1,4 @@
+import hyperneat
 import numpy
 from PIL import Image
 

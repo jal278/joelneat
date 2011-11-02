@@ -105,6 +105,23 @@ class feature_critic:
    for k in range(len(self.active)):
     string+=str((self.features[self.active[k]],self.targets[k],self.weights[k]))+"\n"
    return string
+
+ def distance(self,other):
+   dist=0.0
+   for k in range(len(self.features)):
+    s_ind=o_ind=None
+    if k in self.active:
+     s_ind = self.active.index(k)
+    if k in other.active:
+     o_ind = other.active.index(k)
+    if (s_ind==None and o_ind==None):
+     pass
+    elif (s_ind!=None and o_ind!=None): 
+     dist+=abs(self.targets[s_ind]-other.targets[o_ind])
+    else:
+     dist+=1.0    
+   return dist
+
  def __init__(self):
    self.names=["avg","compression","wavelet","std","sym_x","sym_y","chop"]
    self.features=[hyperneat.feature_detector.average,hyperneat.feature_detector.compression,hyperneat.feature_detector.wavelet,hyperneat.feature_detector.std,hyperneat.feature_detector.symmetry_x,hyperneat.feature_detector.symmetry_y,hyperneat.feature_detector.chop]
@@ -148,7 +165,7 @@ class feature_critic:
  def evaluate_map(self,m):
    fit=0.0
    for k in range(len(self.active)):
-    fit+= (1.0 - abs(m[self.active[k]]-self.targets[k]))*self.weights[k] #chop(a,3)
+    fit+= (1.0 - abs(m[self.active[k]]-self.targets[k]))*self.weights[k] 
    return fit
 
  def evaluate_artist(self,a):
@@ -161,14 +178,14 @@ class feature_critic:
 
  def mutate_feature(self):
    to_mutate=random.randint(0,len(self.weights)-1)
-   if(True):
-    self.weights[to_mutate]+=random.uniform(-0.3,0.3) 
+   if(random.random()<0.5):
+    self.weights[to_mutate]+=random.uniform(-0.2,0.2) 
     if(self.weights[to_mutate]>3.0):
      self.weights[to_mutate]=3.0
     if(self.weights[to_mutate]<0.01):
      self.weights[to_mutate]=0.01
    else:
-    self.targets[to_mutate]+=random.uniform(-0.2,0.2)
+    self.targets[to_mutate]+=random.uniform(-0.1,0.1)
     if(self.targets[to_mutate]>1.0):
      self.targets[to_mutate]=1.0
     if(self.targets[to_mutate]<0.0):
@@ -176,7 +193,7 @@ class feature_critic:
 
  def mutate(self):
    if(random.random()<0.1):
-    if(random.random()<0.7): #add new
+    if(random.random()<0.75): #add new
      self.add_feature()
     else:
      self.del_feature()
@@ -311,7 +328,11 @@ def create_new_pop_gen(oldpop,rate=0.3):
  newpop=[]
  oldpop.sort(key=lambda k:k.fitness)
  eligpop=oldpop[int(rate*len(oldpop)):]
- for k in range(len(oldpop)):
+ 
+ #elitism
+ newpop.append(eligpop[-1].copy())
+ 
+ for k in range(len(oldpop)-1):
   new=make_new(random.choice(eligpop))
   newpop.append(new)
  return newpop

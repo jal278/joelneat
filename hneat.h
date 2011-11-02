@@ -287,11 +287,11 @@ public:
 		}
 		else
 		{
-			weight+=randfloat()*2.0-1.0;
-			if(weight>8.0)
-				weight=8.0;
-			else if (weight<(-8.0))
-				weight=(-8.0);
+			weight+=randfloat()*1.0-0.5;
+			if(weight>3.0)
+				weight=3.0;
+			else if (weight<(-3.0))
+				weight=(-3.0);
 		}
 	}
 
