@@ -2,10 +2,13 @@ import hyperneat
 import random
 from art_basics import *
 
-hyperneat.artist.random_seed()
 
 artists = []
 import sys
+hyperneat.artist.random_seed()
+if(len(sys.argv)>3):
+ print "seeding.."
+ hyperneat.artist.seed(int(sys.argv[3]))
 evals = int(sys.argv[1])
 outfile = sys.argv[2]
 fc = feature_critic() 

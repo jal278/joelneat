@@ -28,10 +28,11 @@ def load_all(gen):
 def load_best(gen):
  global load_dir_base
  load_dir = load_dir_base % gen
- nectar = hyperneat.artist.load(load_dir+"nart0")
- nectarless= hyperneat.artist.load(load_dir+"art0")
+ bests=[]
+ for k in range(3):
+  bests.append(hyperneat.artist.load(load_dir+"art%d_0" % k))
  critic = critic_class.load(load_dir+"crit0")
- return (nectar,nectarless,critic)
+ return (bests,critic)
 
 def hillclimb(trials,critic,target):
  starter = hyperneat.artist()
@@ -61,24 +62,45 @@ def render():
   render_artist(nectarless,"render/%s_nonectar%d.png" % (direc,k))
   open("render/%s_critic%d.txt"%(direc,k),"w").write(str(critic))
 
+def evol_test():
+ critic = critic_class.load(direc+"/generation850/crit0")
+
+ population=[]
+ for k in range(200):
+  population.append(hyperneat.artist())
+
+ speciator = Speciator(20.0,5)
+
+ gen=0
+ while(True):
+  for k in population:
+   k.render_picture()
+   k.fitness =  critic.evaluate_artist(k)
+  max_fit = max([k.fitness for k in population])
+  print gen, max_fit 
+  speciator.speciate(population)
+  population = create_new_pop_gen(population,0.3)
+  gen+=1
+
 def hillclimb_test():
  outfile=open(direc+".out","w")
  
- for k in range(50,850,50):
-  nectar,nectarless,critic=load_best(k)
+ for k in range(850,0,-50):
+  bests,critic=load_best(k)
   #print critic
-  nectar.render_picture()
-  nectarless.render_picture()
-  f1=critic.evaluate_artist(nectar)
-  f2=critic.evaluate_artist(nectarless)
+  f=[]
+  for art in bests:
+   art.render_picture()
+   f.append(critic.evaluate_artist(art))
+
   print "---"
   #print nectar.mapped
   #print nectarless.mapped
-  print f1,f2
+  print f
   trialsum=0
  
   for z in range(5):
-   trials,fitness = hillclimb(5000,critic,f1)
+   trials,fitness = hillclimb(5000,critic,f[0])
    trialsum+=trials
   outfile.write("%d %d\n" % (k,trialsum))
  
@@ -89,22 +111,25 @@ def load_maps(fname):
 def sample_test(): 
  samples=load_maps(sys.argv[2])
  outfile=open(direc+"_sample.out","w")
- for k in range(50,2000,50):
-  nectar,nectarless,critic=load_best(k)
+ for k in range(50,350,50):
+  bests,critic=load_best(k)
   #print critic
-  nectar.render_picture()
-  nectarless.render_picture()
-  f1=critic.evaluate_artist(nectar)
-  f2=critic.evaluate_artist(nectarless)
+  f=[]
+  for art in bests:
+   art.render_picture()
+   f.append(critic.evaluate_artist(art))
   #print nectar.mapped
   #print nectarless.mapped
-  best_sampled = max(map(critic.evaluate_map,samples))
-  outstr = " ".join(map(str,(k,f1,f2,best_sampled)))
-  #print outstr
-  out=0
-  if (f1>best_sampled):
-   out=1
-  print k,out
+  sampled_fit = map(critic.evaluate_map,samples)
+  mfit = max(sampled_fit)
+  firstbeat=0
+  for j in xrange(0,len(sampled_fit)):
+   if sampled_fit[j]>f[0]:
+    firstbeat=j
+    break
+  outstr = " ".join(map(str,(k,f[0],mfit,firstbeat)))
+  print outstr
+
   outfile.write(outstr)
 
 def map_novelty(direc,gen,outfile):
@@ -120,15 +145,14 @@ def map_novelty(direc,gen,outfile):
 def test_novelty():
  gen=600
  test_pop=load_pop("ns4/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)
- nectar,nectarless,critic=load_best(1800)
+ bests,critic=load_best(200)
+ f=[]
+ for k in range(len(bests)):
+  bests[k].render_picture()
+  f.append(critic.evaluate_artist(bests[k]))
 
- nectar.render_picture()
- nectarless.render_picture()
-
- benchmark = critic.evaluate_artist(nectar)
- nless = critic.evaluate_artist(nectarless)
-
- print benchmark,nless
+ benchmark=f[0]
+ print f
  print critic
 
  best=0.0
@@ -141,7 +165,7 @@ def test_novelty():
   if fit>best:
    render_artist(k,"novelty%d.png" % (bcount))
    best=fit
-   print benchmark,best
+   print count,benchmark,best
    bcount+=1
 
-test_novelty()
+sample_test()

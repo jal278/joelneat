@@ -35,6 +35,9 @@ public:
  bool get_nanflag() {
   return orig->nanflag;
  }
+ static void seed(int sd) {
+  srand ( sd );
+ }
  static void random_seed() {
   srand ( time(NULL) );
  }

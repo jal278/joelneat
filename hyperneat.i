@@ -29,6 +29,7 @@ class artist {
   static artist* load_xml(const char*txt);
   int complexity();
   static void random_seed();
+  static void seed(int sd);
   artist();
   ~artist();
   artist* copy();

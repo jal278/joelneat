@@ -33,6 +33,7 @@ def flower_iteration(flower_pops,best_critics,specs):
 
  nectartypes=[0]*len(flower_pops)
  nectartypes[0]=1
+ print "# critics",len(best_critics)
 
  for flower_pop in flower_pops:
   for art in flower_pop:
@@ -54,7 +55,7 @@ def flower_iteration(flower_pops,best_critics,specs):
  pop_tots=[]
  for pop in flower_pops:
   pop.sort(key=lambda k:k.fitness,reverse=True)
-  best_art+=pop[:10]
+  best_art.append(pop[:10])
   pop_tots.append(sum([k.fitness for k in pop[:10]]))
 
  flower_repro(flower_pops,specs)
@@ -67,9 +68,9 @@ def flower_repro(flower_pops,speciators):
  global health
  global flower_pop_size
  
- if health>8 and random.random()<migrate:
+ if False:
+ #if health>8 and random.random()<migrate:
   print "migrating..."
- 
   for i in range(1,len(flower_pops)):
    pop=flower_pops[i]
    for k in range(migrate_count):
@@ -115,9 +116,9 @@ def critic_iteration(critic_pop,best_art):
  grade_critics(critic_pop,best_art)
  #extract best critics for next round
  critic_pop.sort(key=lambda k:k.fitness,reverse=True)
- critic_best = critic_pop[:10] 
+ critic_best = critic_pop[:1] 
  score_critic=sum([k.fitness for k in critic_best])
- 
+ print "critic score:", score_critic
  if(speciation):
   critic_speciator.speciate(critic_pop)
   critic_pop = create_new_pop_gen(critic_pop,0.5)
@@ -163,8 +164,8 @@ direc="test"
 
 critic_pop=[]
 critic_pop_size=100
-flower_pop_size=100
-flower_pop_count=3
+flower_pop_size=80
+flower_pop_count=5
 speciation=True
 
 critic_speciator=Speciator(2.0,5)
@@ -201,15 +202,17 @@ while(True):
  #score_nec = nec_tot
  #score_nonec = nonec_tot
  print "flower iteration."
- best_art,art_scores=flower_iteration(flower_pops,critic_best,flower_speciators)
+ best_artworks,art_scores=flower_iteration(flower_pops,critic_best,flower_speciators)
+ best_art = reduce(lambda x,y:x+y,best_artworks)
  print art_scores
 
  for k in range(int(critic_cycles)):
   print "critic iteration."
   critic_pop,best_critics,score_critic=critic_iteration(critic_pop,best_art)
  
+ critic_best=best_critics
  if(health<3):
-  critic_cycles=3
+  critic_cycles=10
  elif(health>7):
   critic_cycles=0
  else:
@@ -233,9 +236,9 @@ while(True):
   os.system("mkdir %s" % directory)
   cfname = directory+"/crit%d"
   save_pop(critic_pop,cfname)
-  for k in range(len(flower_pops)):
+  for k in range(len(best_artworks)):
    afname = directory+"/art%d" %k +"_%d"
-   save_pop(flower_pops[k],afname)
+   save_pop(best_artworks[k],afname)
 
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
  log_file.flush()

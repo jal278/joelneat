@@ -47,7 +47,7 @@ class Speciator:
   elif len(self.species)>self.target:
    self.threshold*=1.1
   
-  print "species: ", len(self.species)
+  #print "species: ", len(self.species)
 
 
 
