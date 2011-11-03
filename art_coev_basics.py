@@ -1,17 +1,16 @@
 import hyperneat
 from art_basics import *
 
-def create_flowers(size):
- nectar_pop=[]
- nectarless_pop=[]
- for k in range(size):
-  new_art=hyperneat.artist()
-  new_art.fitness=0
-  nectar_pop.append(new_art)
-  new_art=hyperneat.artist()
-  new_art.fitness=0
-  nectarless_pop.append(new_art)
- return nectar_pop,nectarless_pop
+def create_flowers(size,num):
+ pops=[]
+ for j in range(num):
+  tpop=[]
+  for k in range(size):
+   new_art=hyperneat.artist()
+   new_art.fitness=0
+   tpop.append(new_art)
+  pops.append(tpop)
+ return pops
 
 def create_critics(size): 
  critic_pop=[]

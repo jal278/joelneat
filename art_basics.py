@@ -150,18 +150,21 @@ class feature_critic:
    self.active.append(feature)
    self.targets.append(random.uniform(0.0,1.0))
    self.weights.append(random.uniform(0.0,3.0)) 
+
  def del_feature(self):
    if(len(self.active)>1):
     to_rem=random.randint(0,len(self.active)-1)
     del self.active[to_rem]
     del self.weights[to_rem]
     del self.targets[to_rem]
+
  def map_all(self,a):
   vals=[]
   for k in self.features:
    vals.append(k(a))
   a.mapped=vals
   return vals
+
  def evaluate_map(self,m):
    fit=0.0
    for k in range(len(self.active)):
@@ -324,15 +327,19 @@ def multiobjective_select(pop):
   newpop.append(make_new(pop[repro]))
  return newpop
 
-def create_new_pop_gen(oldpop,rate=0.3):
+def create_new_pop_gen(oldpop,rate=0.3,psize=None):
+ if(psize==None):
+  psize=len(oldpop)
  newpop=[]
+ oldpop.sort(key=lambda k:k.raw_fitness)
+
+ #elitism
+ newpop.append(oldpop[-1].copy())
+
  oldpop.sort(key=lambda k:k.fitness)
  eligpop=oldpop[int(rate*len(oldpop)):]
- 
- #elitism
- newpop.append(eligpop[-1].copy())
- 
- for k in range(len(oldpop)-1):
+  
+ for k in range(psize-1):
   new=make_new(random.choice(eligpop))
   newpop.append(new)
  return newpop

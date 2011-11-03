@@ -9,7 +9,7 @@ from art_coev_basics import *
 from render_help import *
 hyperneat.artist.random_seed()
 
-direc="coev2"
+direc="test"
 load_dir_base=direc+"/generation%s/"
 
 def set_base(dname):
@@ -54,7 +54,7 @@ def hillclimb(trials,critic,target):
 hyperneat.artist.random_seed()
 
 def render():
- for k in range(800,0,-50):
+ for k in range(2000,0,-50):
   print "Rendering ",k
   nectar,nectarless,critic=load_best(k)
   render_artist(nectar,"render/%s_nectar%d.png" % (direc,k))
@@ -89,23 +89,28 @@ def load_maps(fname):
 def sample_test(): 
  samples=load_maps(sys.argv[2])
  outfile=open(direc+"_sample.out","w")
- for k in range(50,800,50):
+ for k in range(50,2000,50):
   nectar,nectarless,critic=load_best(k)
   #print critic
   nectar.render_picture()
   nectarless.render_picture()
   f1=critic.evaluate_artist(nectar)
   f2=critic.evaluate_artist(nectarless)
-  print "---"
   #print nectar.mapped
   #print nectarless.mapped
-  outstr = " ".join(map(str,(k,f1,f2,max(map(critic.evaluate_map,samples)),"\n")))
-  print outstr
+  best_sampled = max(map(critic.evaluate_map,samples))
+  outstr = " ".join(map(str,(k,f1,f2,best_sampled)))
+  #print outstr
+  out=0
+  if (f1>best_sampled):
+   out=1
+  print k,out
   outfile.write(outstr)
 
 def map_novelty(direc,gen,outfile):
  test_pop=load_pop(direc+"/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)
  outstr=""
+ fc=feature_critic()
  for artist in test_pop:
   artist.render_picture()
   vals = fc.map_all(artist)
@@ -115,7 +120,8 @@ def map_novelty(direc,gen,outfile):
 def test_novelty():
  gen=600
  test_pop=load_pop("ns4/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)
- nectar,nectarless,critic=load_best(800)
+ nectar,nectarless,critic=load_best(1800)
+
  nectar.render_picture()
  nectarless.render_picture()
 
@@ -137,3 +143,5 @@ def test_novelty():
    best=fit
    print benchmark,best
    bcount+=1
+
+test_novelty()

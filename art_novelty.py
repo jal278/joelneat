@@ -77,6 +77,7 @@ def create_new_pop(oldpop,delete=0.2):
  return newpop
 
 gen=0
+
 while(True):
  print "generation:" ,gen
  gen+=1

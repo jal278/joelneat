@@ -6,7 +6,126 @@ import gc
 from art_basics import *
 from art_coev_basics import *
 
-render=False
+def grade_flowers(flower_pop,best_critics):
+ for crit in best_critics:
+   ranks=[]
+   fits=[]
+
+   #evaluate all the artists by the best critics
+   for art in flower_pop:
+    fit=crit.evaluate_artist(art)
+    fits.append(fit)
+   
+   #rank the artists by their critic assessments
+   ranks=zip(fits,range(len(flower_pop)))
+   ranks.sort()
+   a,ranks=zip(*ranks)
+ 
+   #give an individual fitness proportional to its rank
+   for k in range(len(flower_pop)):
+    art = flower_pop[ranks[k]]
+    art.fitness+=k
+ for k in flower_pop:
+  k.raw_fitness=k.fitness
+
+def flower_iteration(flower_pops,best_critics,specs):
+ count=0
+
+ nectartypes=[0]*len(flower_pops)
+ nectartypes[0]=1
+
+ for flower_pop in flower_pops:
+  for art in flower_pop:
+   if(not art.isrendered()):
+    art.render_picture()
+   if(art.get_nanflag()):
+    art.fitness = -10000.0
+    art.clear_picture()
+   else:
+    art.fitness=0.0
+   art.nectar=nectartypes[count]
+  count+=1
+ 
+ flower_pop=reduce(lambda x,y:x+y,flower_pops)
+ random.shuffle(flower_pop)
+ grade_flowers(flower_pop,best_critics)
+
+ best_art=[]
+ pop_tots=[]
+ for pop in flower_pops:
+  pop.sort(key=lambda k:k.fitness,reverse=True)
+  best_art+=pop[:10]
+  pop_tots.append(sum([k.fitness for k in pop[:10]]))
+
+ flower_repro(flower_pops,specs)
+ return best_art,pop_tots
+
+def flower_repro(flower_pops,speciators):
+ migrate=0.0
+ migrate_count=3
+ global speciation 
+ global health
+ global flower_pop_size
+ 
+ if health>8 and random.random()<migrate:
+  print "migrating..."
+ 
+  for i in range(1,len(flower_pops)):
+   pop=flower_pops[i]
+   for k in range(migrate_count):
+    del pop[-1]
+    pop.insert(0,flower_pops[0][k].copy())
+    pop[0].fitness=100000
+
+ for i in range(len(flower_pops)):
+   psize=flower_pop_size
+   if (i==0):
+    if (health>8):
+      psize=int(flower_pop_size/1.5)
+   else:
+    if (health<3):
+      psize=int(flower_pop_size*1.5) 
+   #new pops
+   speciator=speciators[i]
+   pop=flower_pops[i]
+   if(speciation):
+    speciator.speciate(pop)
+   flower_pops[i]  = create_new_pop_gen(pop,0.5,psize)
+   
+def grade_critics(critic_pop,best_art):
+ for crit in critic_pop:
+   fits=[]
+   for art in best_art:
+    fit=crit.evaluate_artist(art)
+    fits.append((fit,art.nectar))
+   ranks=zip(fits,range(len(best_art)))
+   ranks.sort()
+   count=1
+   for k in ranks:
+    if k[0][1]==1:
+     crit.fitness+=count
+    count+=1 
+   crit.raw_fitness=crit.fitness
+ 
+def critic_iteration(critic_pop,best_art):
+ global speciation
+ for crit in critic_pop:
+  crit.fitness=0.0
+ random.shuffle(best_art)
+ grade_critics(critic_pop,best_art)
+ #extract best critics for next round
+ critic_pop.sort(key=lambda k:k.fitness,reverse=True)
+ critic_best = critic_pop[:10] 
+ score_critic=sum([k.fitness for k in critic_best])
+ 
+ if(speciation):
+  critic_speciator.speciate(critic_pop)
+  critic_pop = create_new_pop_gen(critic_pop,0.5)
+
+ return critic_pop,critic_best,score_critic
+
+
+render=True
 screen,background=None,None
 if(render):
  import pygame
@@ -24,192 +143,99 @@ if(render):
 SX=SY=64
 PXS = 2
 
-def render_picture(x,y,pxsize,data):
+def render_picture(nectar,x,y,pxsize,data):
  global render,screen,background,SX,SY
  if(not render):
   return
+ if(nectar==1):
+  pygame.draw.rect(background,(0,255,0),(x-2,y-2,SX*pxsize+2,SY*pxsize+2),15)
  for xc in range(SX):
   for yc in range(SY):
    px=int ( (data[xc][yc]+1.0)*128)
    px=min(px,255)
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
+  
 
 hyperneat.artist.random_seed()
 
 direc="test"
-nectar_pop,nectarless_pop,critic_pop= ([],[],[])
 
-critic_pop_size=200
-flower_pop_size=200
+critic_pop=[]
+critic_pop_size=100
+flower_pop_size=100
+flower_pop_count=3
 speciation=True
-critic_speciator=Speciator(2.0,8)
-nectar_speciator=Speciator(20.0,8)
-nectarless_speciator=Speciator(20.0,8)
 
+critic_speciator=Speciator(2.0,5)
+flower_speciators=[Speciator(20.0,5) for k in range(flower_pop_count)]
+flower_pops=[]
+
+log_file=open(direc+"/log.dat","w")
+log_file.write("##|##\n")
+log_file.write("generation|")
+for k in range(flower_pop_count):
+ log_file.write("p%d|"%k)
+log_file.write("critic\n")
 if(False):
  load_dir=direc+"/generation800/"
  nectar_pop=load_pop(load_dir+"nart%d",flower_pop_size,hyperneat.artist)
  nectarless_pop=load_pop(load_dir+"art%d",flower_pop_size,hyperneat.artist)
  critic_pop=load_pop(load_dir+"crit%d",critic_pop_size,critic_class)
 else:
- nectar_pop,nectarless_pop = create_flowers(flower_pop_size)
+ flower_pops = create_flowers(flower_pop_size,flower_pop_count)
  critic_pop = create_critics(critic_pop_size)
 
-bestcount=20
+bestcount=10
 critic_best=critic_pop[:bestcount]
-best_art=nectar_pop[:bestcount]+nectarless_pop[:bestcount]
-gen=0
-migrate=0.0 #0.01
-migrate_count=3
-cycle_len=1
-ART=0
-CRITIC=1
-cycle=CRITIC
+best_art=reduce(lambda x,y:x+y,[pop[:bestcount] for pop in flower_pops])
 
+health=0
+score_flowers=[]
+score_critic=0
+critic_cycles=1
+gen=0
 while(True):
  print "generation:" ,gen
  gen+=1
+ #score_nec = nec_tot
+ #score_nonec = nonec_tot
+ print "flower iteration."
+ best_art,art_scores=flower_iteration(flower_pops,critic_best,flower_speciators)
+ print art_scores
 
- for art in nectar_pop:
-  if(not art.isrendered()):
-   art.render_picture()
-  art.fitness=0.0
-  art.ranks=[]
-  art.best=0
-  art.nectar=1
-  art.worst=10000
-  art.selected=None
+ for k in range(int(critic_cycles)):
+  print "critic iteration."
+  critic_pop,best_critics,score_critic=critic_iteration(critic_pop,best_art)
  
- for art in nectarless_pop:
-  art.render_picture()
-  art.fitness=0.0
-  art.ranks=[]
-  art.best=0
-  art.nectar=0
-  art.worst=10000
-  art.selected=None
+ if(health<3):
+  critic_cycles=3
+ elif(health>7):
+  critic_cycles=0
+ else:
+  critic_cycles=1 
 
- if(cycle==CRITIC):
-  for crit in critic_pop:
-   crit.fitness=0.0
-
-
- #random.shuffle(critic_best)
- if(cycle==ART):
-  total_pop=nectar_pop+nectarless_pop
-  random.shuffle(total_pop)
-  for crit in critic_best:
-   ranks=[]
-   fits=[]
-   for art in total_pop:
-    fit=crit.evaluate_artist(art)
-    fits.append((fit,art.nectar))
-   ranks=zip(fits,range(len(total_pop)))
-   ranks.sort()
-   a,ranks=zip(*ranks)
- 
-   for k in range(len(total_pop)):
-    art = total_pop[ranks[k]]
-    art.fitness+=k
- 
-  for art in total_pop:
-   if(art.get_nanflag()):
-    art.fitness = -100.0
-    art.clear_picture()
-
-  nectar_pop.sort(key=lambda k:k.fitness,reverse=True)
-  nectarless_pop.sort(key=lambda k:k.fitness,reverse=True)
-  best_art=nectar_pop[:bestcount]+nectarless_pop[:bestcount]
-
- if(cycle==CRITIC):
-  random.shuffle(best_art)
-  #now to calculate fitnesses for artists and critics
-  for crit in critic_pop:
-   fits=[]
-   for art in best_art:
-    fit=crit.evaluate_artist(art)
-    fits.append((fit,art.nectar))
-   ranks=zip(fits,range(len(best_art)))
-   ranks.sort()
-   count=0
-   for k in ranks:
-    if k[0][1]==1:
-     crit.fitness+=count
-    else:
-     crit.fitness-=count
-    count+=1 
-
-  #extract best critics for next round
-  critic_pop.sort(key=lambda k:k.fitness,reverse=True)
-  critic_best = critic_pop[:bestcount] 
- 
- if(cycle==ART):  
-  nectar_pop.sort(key=lambda k:k.fitness,reverse=True)
-  nec_tot =  sum([k.fitness for k in nectar_pop])
-  nectarless_pop.sort(key=lambda k:k.fitness,reverse=True)
-  nonec_tot = sum([k.fitness for k in nectarless_pop])
-  ratio = float(nec_tot)/(float(nonec_tot)+0.000000001)
-  print "---"
-  print "nec:" , nec_tot
-  print nectar_pop[0].mapped
-  print "no nec:", nonec_tot
-  print nectarless_pop[0].mapped
-  print "ratio:" , ratio
- if(cycle==CRITIC): 
-  print "Crit best:" , critic_best[0].fitness
-  print critic_best[0]
-
- gs=4
- for k in range(16):
-  total_pop=nectar_pop[:8]+nectarless_pop[:8]
-  render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,total_pop[k].get_picture())
- 
+ best_art.sort(key=lambda k:k.raw_fitness,reverse=True)
+ health = sum([k.nectar for k in best_art[:10]])
+ print health
  if(render):
+  background.fill((255, 255, 255))
+  #note: use raw fitness for speciated pop
+  gs=4
+  for k in range(16):
+   total_pop=best_art[:16]
+   render_picture(total_pop[k].nectar,25+(k%gs)*180,25+(k/gs)*180,PXS,total_pop[k].get_picture())
   screen.blit(background,(0,0))
   pygame.display.flip()
 
  if((gen)%50==0):
   directory="%s/generation%d"%(direc,gen)
   os.system("mkdir %s" % directory)
-  afname = directory+"/nart%d"
-  afname2 = directory+"/art%d"
   cfname = directory+"/crit%d"
   save_pop(critic_pop,cfname)
-  save_pop(nectar_pop,afname)
-  save_pop(nectarless_pop,afname2)
+  for k in range(len(flower_pops)):
+   afname = directory+"/art%d" %k +"_%d"
+   save_pop(flower_pops[k],afname)
 
- if(cycle==CRITIC):
-  print "critic reproduction"
-  if(speciation):
-   critic_speciator.speciate(critic_pop)
-  critic_pop = create_new_pop_gen(critic_pop,0.5)
- else:
-  print "artist reproduction"
-  #migration
-  new_migrate=migrate
-  if(ratio>2):
-   new_migrate*=10
-  if random.random()<new_migrate:
-   print "migrating..."
-   for k in range(migrate_count):
-    del nectarless_pop[-1]
-   for k in range(migrate_count):
-    nectarless_pop.insert(0,nectar_pop[k].copy())
-    nectarless_pop[0].fitness=100000
-
-  #new pops
-  if(speciation):
-   nectar_speciator.speciate(nectar_pop)
-   nectarless_speciator.speciate(nectarless_pop)
-
-  nectar_pop = create_new_pop_gen(nectar_pop,0.5)
-  nectarless_pop = create_new_pop_gen(nectarless_pop,0.5)
- 
- if(gen%cycle_len==0):
-  if(cycle==ART):
-   cycle=CRITIC
-   continue
-  else:
-   cycle=ART
-   continue
+ #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
+ log_file.flush()
