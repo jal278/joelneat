@@ -20,15 +20,3 @@ def create_critics(size):
    critic_pop.append(new_critic)
  return critic_pop
 
-def save_pop(pop,fname):
- count=0
- for k in pop:
-  k.save(fname%count)
-  count+=1
-
-def load_pop(fn,size,cname):
- pop=[]
- for k in range(size):
-  pop.append(cname.load(fn%k))
- return pop
-

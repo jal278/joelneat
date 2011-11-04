@@ -2,7 +2,6 @@ import hyperneat
 import random
 from art_basics import *
 
-
 artists = []
 import sys
 hyperneat.artist.random_seed()

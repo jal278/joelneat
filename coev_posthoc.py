@@ -111,7 +111,7 @@ def load_maps(fname):
 def sample_test(): 
  samples=load_maps(sys.argv[2])
  outfile=open(direc+"_sample.out","w")
- for k in range(50,350,50):
+ for k in range(50,400,50):
   bests,critic=load_best(k)
   #print critic
   f=[]

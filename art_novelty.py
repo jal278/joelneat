@@ -1,17 +1,29 @@
-import numpy
+numeric=False
+if(numeric):
+ import numeric as numpy
+else:
+ import numpy
+
 import os
+import sys
 import hyperneat
 import random
-
-import pygame
-import gc
 from art_basics import *
 
-#gc.set_debug(gc.DEBUG_LEAK | gc.DEBUG_STATS)
 render=True
-#PYGAME SETUP
+
 screen,background=None,None
+
+def save_pop_behaviors(pop,fname):
+ outstr=""
+ for k in pop:
+  vals = k.behavior
+  outstr += " ".join(map(str,vals))+"\n"
+ out = open(fname,"w")
+ out.write(outstr)
+
 if(render):
+ import pygame
  pygame.init()
  screen = pygame.display.set_mode((700, 700))
  background = pygame.Surface(screen.get_size())
@@ -35,50 +47,31 @@ def render_picture(x,y,pxsize,data):
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
 
 hyperneat.artist.random_seed()
+if(len(sys.argv)>2):
+ print "seeding..."
+ hyperneat.artist.seed(int(sys.argv[2]))
+
 art_pop = []
 nov_crit = novelty_mapper()
+pop_size = 50
+speciator = Speciator(5.0,8)
 
-for k in range(400):
+for k in range(pop_size):
  new_art=hyperneat.artist()
  new_art.fitness=0
  art_pop.append(new_art)
 
-def make_new(ind):
- child=ind.copy()
- if(random.random()>0.2):
-  child.mutate()
- return child
-
-def save_pop(pop,fname):
- count=0
- for k in pop:
-  k.save(fname%count)
-  count+=1
-
-def create_new_pop(oldpop,delete=0.2):
- fit_sum=sum([k.fitness for k in oldpop])
- com_sum=sum([k.complexity() for k in oldpop])
- print "fitness: ", fit_sum
- print "complexity: ", com_sum
- newpop=[]
- size=len(oldpop)
- oldpop.sort(key=lambda x:x.fitness)
- remove=int(delete*len(oldpop))
- oldpop=oldpop[remove:]
- for k in oldpop:
-  new = make_new(k)
-  new.fitness=0
-  newpop.append(new)
- for k in range(remove):
-  new = make_new(random.choice(oldpop))
-  new.fitness=0
-  newpop.append(new)
- del oldpop
- return newpop
-
 gen=0
 
+archive=[]
+archive_threshold = 0.5
+archive_add_count=0
+archive_freeze_count=0
+dname = sys.argv[1]
+
+os.system("mkdir %s" % dname)
 while(True):
+ archive_add_count=0
  print "generation:" ,gen
  gen+=1
  print "rendering art"
@@ -96,25 +89,47 @@ while(True):
    art.clear_picture()
   else:
    art.dists=[((art.behavior-x.behavior)**2).sum() for x in art_pop]
+   arch_dists=[((art.behavior-x.behavior)**2).sum() for x in archive]
+   arch_dists.sort()
+   if(len(arch_dists)<2 or arch_dists[1]>archive_threshold):
+    archive.append(art)
+    archive_add_count+=1
+
+   art.dists+=arch_dists
    art.dists.sort()
    art.fitness = sum(art.dists[:20])   
-
- art_pop.sort(key=lambda k:k.fitness,reverse=True)
+   art.raw_fitness = art.fitness
  
- gs=4
- for k in range(16):
-  render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,art_pop[k].get_picture())
+ #adjust archive threshold
+ print "Archive size: ", len(archive), " threshold: ", archive_threshold 
+ if(archive_add_count>4):
+  archive_threshold*=1.3
+ 
+ if(archive_add_count==0):
+  archive_freeze_count+=1
+  if(archive_freeze_count>=7):
+   archive_freeze_count=0
+   archive_threshold*=0.85
+ else:
+  archive_freeze_count=0
+
+ speciator.speciate(art_pop)
+ art_pop.sort(key=lambda k:k.raw_fitness,reverse=True)
  
  if(render):
+  gs=4
+  for k in range(16):
+   render_picture(25+(k%gs)*180,25+(k/gs)*180,PXS,art_pop[k].get_picture())
   screen.blit(background,(0,0))
   pygame.display.flip()
+
  if((gen)%50==0):
-  directory="ns4/generation%d"%gen
+  directory="%s/generation%d"%(dname,gen)
   os.system("mkdir %s" % directory)
   afname = directory+"/art%d"
   save_pop(art_pop,afname)
- art_pop = create_new_pop(art_pop,0.3)
-
-for k in art_pop:
- del k
-gc.collect()
+  save_pop(archive,directory+"/archive%d")
+  save_pop_behaviors(archive,directory+"/arc_behaviorlist" )
+  save_pop_behaviors(art_pop,directory+"/pop_behaviorlist" )
+ 
+ art_pop = create_new_pop_gen(art_pop,0.3)
