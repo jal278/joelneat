@@ -1,6 +1,6 @@
 numeric=False
 if(numeric):
- import numeric as numpy
+ import Numeric as numpy
 else:
  import numpy
 
@@ -88,8 +88,8 @@ while(True):
    art.fitness = -100.0
    art.clear_picture()
   else:
-   art.dists=[((art.behavior-x.behavior)**2).sum() for x in art_pop]
-   arch_dists=[((art.behavior-x.behavior)**2).sum() for x in archive]
+   art.dists=[sum((art.behavior-x.behavior)**2) for x in art_pop]
+   arch_dists=[sum((art.behavior-x.behavior)**2) for x in archive]
    arch_dists.sort()
    if(len(arch_dists)<2 or arch_dists[1]>archive_threshold):
     archive.append(art)

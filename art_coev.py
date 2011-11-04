@@ -1,8 +1,8 @@
+import sys
 import os
 import hyperneat
 import random
 
-import gc
 from art_basics import *
 from art_coev_basics import *
 
@@ -126,7 +126,7 @@ def critic_iteration(critic_pop,best_art):
  return critic_pop,critic_best,score_critic
 
 
-render=True
+render=False
 screen,background=None,None
 if(render):
  import pygame
@@ -157,10 +157,13 @@ def render_picture(nectar,x,y,pxsize,data):
    px=max(px,0)
    pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
   
-
 hyperneat.artist.random_seed()
+if(len(sys.argv)>2):
+ print "seeding..."
+ hyperneat.artist.seed(int(sys.argv[2]))
 
-direc="test"
+direc=sys.argv[1]
+os.system("mkdir %s" % direc)
 
 critic_pop=[]
 critic_pop_size=100
@@ -239,6 +242,7 @@ while(True):
   for k in range(len(best_artworks)):
    afname = directory+"/art%d" %k +"_%d"
    save_pop(best_artworks[k],afname)
-
+ if(gen==500):
+  break
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
  log_file.flush()
