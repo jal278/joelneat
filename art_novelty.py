@@ -123,7 +123,8 @@ while(True):
   screen.blit(background,(0,0))
   pygame.display.flip()
 
- if((gen)%50==0):
+ #if((gen)%50==0):
+ if((gen)==500):
   directory="%s/generation%d"%(dname,gen)
   os.system("mkdir %s" % directory)
   afname = directory+"/art%d"
@@ -131,5 +132,5 @@ while(True):
   save_pop(archive,directory+"/archive%d")
   save_pop_behaviors(archive,directory+"/arc_behaviorlist" )
   save_pop_behaviors(art_pop,directory+"/pop_behaviorlist" )
- 
+  break 
  art_pop = create_new_pop_gen(art_pop,0.3)
