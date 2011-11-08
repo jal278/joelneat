@@ -231,8 +231,8 @@ class feature_critic:
    new=pickle.loads(string)
    return new
 
-critic_class = feature_critic
-#critic_class = hyperneat.evaluator
+#critic_class = feature_critic
+critic_class = hyperneat.evaluator
 
 def load_objective(size,gen,n):
  d = "generation%s/" % gen

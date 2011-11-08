@@ -1,9 +1,7 @@
 import os
 import hyperneat
 import random
-import pygame
 import sys
-import gc
 from art_basics import *
 from art_coev_basics import *
 from render_help import *
@@ -54,13 +52,24 @@ def hillclimb(trials,critic,target):
 
 hyperneat.artist.random_seed()
 
-def render():
- for k in range(2000,0,-50):
+def render(outdir):
+ for k in range(500,0,-50):
   print "Rendering ",k
-  nectar,nectarless,critic=load_best(k)
-  render_artist(nectar,"render/%s_nectar%d.png" % (direc,k))
-  render_artist(nectarless,"render/%s_nonectar%d.png" % (direc,k))
-  open("render/%s_critic%d.txt"%(direc,k),"w").write(str(critic))
+  bests,critic=load_best(k)
+  for j in range(len(bests)):
+   render_artist(bests[j],"%s/art%d_%d.png" % (outdir,k,j))
+  open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
+
+#for rendering a whole coev set of runs
+"""
+for k in range(20):
+ print "rendering %d" % k
+ basedir = "artcov/run%d" % k
+ set_base(basedir)
+ outdir = "render/cov%d/" %k
+ os.mkdir(outdir)
+ render(outdir)
+"""
 
 def evol_test():
  critic = critic_class.load(direc+"/generation850/crit0")
@@ -108,21 +117,20 @@ def load_maps(fname):
  lines=open(fname).read().split("\n")[:-1]
  return [[float(l) for l in k.split()] for k in lines]
 
-def sample_test(): 
- samples=load_maps(sys.argv[2])
- outfile=open(direc+"_sample.out","w")
- for k in range(50,400,50):
+
+def sample_test(outf): 
+ global samples
+ outfile=open(outf,"w")
+ for k in range(50,550,50):
   bests,critic=load_best(k)
   #print critic
   f=[]
   for art in bests:
    art.render_picture()
    f.append(critic.evaluate_artist(art))
-  #print nectar.mapped
-  #print nectarless.mapped
   sampled_fit = map(critic.evaluate_map,samples)
   mfit = max(sampled_fit)
-  firstbeat=0
+  firstbeat=len(samples)
   for j in xrange(0,len(sampled_fit)):
    if sampled_fit[j]>f[0]:
     firstbeat=j
@@ -130,7 +138,28 @@ def sample_test():
   outstr = " ".join(map(str,(k,f[0],mfit,firstbeat)))
   print outstr
 
-  outfile.write(outstr)
+  outfile.write(outstr+"\n")
+
+samples=[]
+print "loading samples..."
+
+for k in range(10):
+ print k
+ samples+=load_maps("samples/samples%d.txt"%k)
+
+"""
+for k in range(20):
+ print k
+ samples+=load_maps("artnov/run%d/generation500/arc_behaviorlist"%k)
+ samples+=load_maps("artnov/run%d/generation500/pop_behaviorlist"%k)
+"""
+
+for k in range(20):
+ print "sample testing %d" % k
+ basedir = "artcov/run%d" % k
+ set_base(basedir)
+ outf = "artcov%d_sample.out" % k
+ sample_test(outf)
 
 def map_novelty(direc,gen,outfile):
  test_pop=load_pop(direc+"/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)
@@ -168,4 +197,3 @@ def test_novelty():
    print count,benchmark,best
    bcount+=1
 
-sample_test()

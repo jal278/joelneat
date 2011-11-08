@@ -45,6 +45,7 @@ class artist {
 
 class evaluator {
  public:
+ double distance(evaluator*a);
  int complexity();
  void save(const char*fn);
  void load(const char*fn);

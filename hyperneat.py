@@ -196,6 +196,7 @@ class evaluator(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, evaluator, name)
     __repr__ = _swig_repr
+    def distance(self, *args): return _hyperneat.evaluator_distance(self, *args)
     def complexity(self): return _hyperneat.evaluator_complexity(self)
     def save(self, *args): return _hyperneat.evaluator_save(self, *args)
     def load(self, *args): return _hyperneat.evaluator_load(self, *args)

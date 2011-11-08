@@ -126,7 +126,7 @@ def critic_iteration(critic_pop,best_art):
  return critic_pop,critic_best,score_critic
 
 
-render=False
+render=True
 screen,background=None,None
 if(render):
  import pygame

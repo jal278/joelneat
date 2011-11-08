@@ -353,7 +353,7 @@ TiXmlElement* Network::create_xml()
 	TiXmlElement* cppns_node = new TiXmlElement("CPPNs");
 	TiXmlElement* substrate_node = new TiXmlElement("substrates");
 
-		char outstring[100];		
+		char outstring[100000];		
 		sprintf(outstring,"%f",fitness);
 		if(noveltypoint!=NULL)
 			sprintf(outstring,"%f",noveltypoint->fitness);

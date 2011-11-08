@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <math.h>
 #include <time.h>
 using namespace std;
 #include <Python.h>
@@ -177,6 +178,10 @@ class evaluator {
   delete net;
   net = Network::load(fn);
  }
+
+ double distance(evaluator* other) {
+  return net->distance((individual*)other->net); 
+ }
  int complexity()  {
   return net->complexity();
  }
@@ -215,13 +220,15 @@ class evaluator {
   net->mutate();
  }
  double evaluate_artist(artist* a) {
-  cout << "loading inputs" << endl;
+ // cout << "loading inputs" << endl;
   net->inputs[0]->load_in(a->buffer);
-  cout << "activating" << endl;
+ // cout << "activating" << endl;
   for(int k=0;k<2;k++)
    net->activate();
-  cout << "done" <<endl;
-  return net->outputs[0]->activation;
+  //cout << "done" <<endl;
+  double temp = net->outputs[0]->activation;
+  if (isnan(temp)) return 0.0;
+  return temp;
  }
 
  ~evaluator() {

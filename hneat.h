@@ -183,7 +183,7 @@ public:
 
 	TiXmlElement* create_xml()
 	{
-		char outstring[100];
+		char outstring[1000];
 		
 		TiXmlElement* sub_node= new TiXmlElement("substrate");
 		
