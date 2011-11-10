@@ -115,8 +115,8 @@ def critic_iteration(critic_pop,best_art):
  random.shuffle(best_art)
  grade_critics(critic_pop,best_art)
  #extract best critics for next round
- critic_pop.sort(key=lambda k:k.fitness,reverse=True)
- critic_best = critic_pop[:1] 
+ critic_pop.sort(key=lambda k:k.raw_fitness,reverse=True)
+ critic_best = critic_pop[:3] 
  score_critic=sum([k.fitness for k in critic_best])
  print "critic score:", score_critic
  if(speciation):
@@ -141,8 +141,8 @@ if(render):
  screen.blit(background, (0, 0))
  pygame.display.flip()
 
-SX=SY=64
-PXS = 2
+SX=SY=16
+PXS = 8
 
 def render_picture(nectar,x,y,pxsize,data):
  global render,screen,background,SX,SY
@@ -155,7 +155,7 @@ def render_picture(nectar,x,y,pxsize,data):
    px=int ( (data[xc][yc]+1.0)*128)
    px=min(px,255)
    px=max(px,0)
-   pygame.draw.circle(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
+   pygame.draw.rect(background, (px,0,0), (x+xc*pxsize,y+yc*pxsize,pxsize,pxsize),0)
   
 hyperneat.artist.random_seed()
 if(len(sys.argv)>2):
@@ -215,7 +215,7 @@ while(True):
  
  critic_best=best_critics
  if(health<3):
-  critic_cycles=10
+  critic_cycles=3
  elif(health>7):
   critic_cycles=0
  else:
@@ -242,7 +242,7 @@ while(True):
   for k in range(len(best_artworks)):
    afname = directory+"/art%d" %k +"_%d"
    save_pop(best_artworks[k],afname)
- if(gen==500):
+ if(gen==1500):
   break
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
  log_file.flush()

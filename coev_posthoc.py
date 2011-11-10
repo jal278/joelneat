@@ -27,7 +27,7 @@ def load_best(gen):
  global load_dir_base
  load_dir = load_dir_base % gen
  bests=[]
- for k in range(3):
+ for k in range(5):
   bests.append(hyperneat.artist.load(load_dir+"art%d_0" % k))
  critic = critic_class.load(load_dir+"crit0")
  return (bests,critic)
@@ -53,12 +53,12 @@ def hillclimb(trials,critic,target):
 hyperneat.artist.random_seed()
 
 def render(outdir):
- for k in range(500,0,-50):
+ for k in range(1500,0,-50):
   print "Rendering ",k
   bests,critic=load_best(k)
   for j in range(len(bests)):
    render_artist(bests[j],"%s/art%d_%d.png" % (outdir,k,j))
-  open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
+  #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
 """
@@ -140,12 +140,15 @@ def sample_test(outf):
 
   outfile.write(outstr+"\n")
 
+
 samples=[]
 print "loading samples..."
 
+"""
 for k in range(10):
  print k
  samples+=load_maps("samples/samples%d.txt"%k)
+"""
 
 """
 for k in range(20):
@@ -154,12 +157,17 @@ for k in range(20):
  samples+=load_maps("artnov/run%d/generation500/pop_behaviorlist"%k)
 """
 
+"""
 for k in range(20):
  print "sample testing %d" % k
  basedir = "artcov/run%d" % k
  set_base(basedir)
  outf = "artcov%d_sample.out" % k
  sample_test(outf)
+"""
+
+set_base("artcov")
+render("render")
 
 def map_novelty(direc,gen,outfile):
  test_pop=load_pop(direc+"/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)

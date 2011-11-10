@@ -39,7 +39,7 @@ class Singleton
 			af.push_back(gaussian_af_approx);
 			af.push_back(sin_af_approx);
 		        af.push_back(linear_af);
-                        af.push_back(mod_af);
+                        //af.push_back(mod_af);
 			cout << "In Ctor" << endl; }
         ~Singleton() { cout << "In Dtor" << endl; }
 

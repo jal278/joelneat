@@ -10,11 +10,15 @@ using namespace std;
 #include "hneat.h"
 #include "display_cppn.h"
 #include "tinyxml/tinyxml.h"
-#define SX 64
-#define SY 64
 
-#define LARGESX 512
-#define LARGESY 512
+
+//#define SX 64
+//#define SY 64
+#define SX 16
+#define SY 16
+
+#define LARGESX 256
+#define LARGESY 256
 #include <bzlib.h>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_sort.h>
@@ -174,9 +178,11 @@ class evaluator {
  void save(const char* fn) {
   net->save(fn);
  }
- void load(const char* fn) {
-  delete net;
-  net = Network::load(fn);
+ static evaluator* load(const char *fn) {
+  evaluator* ret = new evaluator();
+  delete ret->net;
+  ret->net = Network::load(fn);
+  return ret;
  }
 
  double distance(evaluator* other) {
@@ -191,8 +197,8 @@ class evaluator {
         vector<int> hid;
 	r1.push_back(SX);
 	r1.push_back(SY);
-        hid.push_back(SX/8);
-        hid.push_back(SY/8);
+        hid.push_back(SX/4); //was 8
+        hid.push_back(SY/4); //was 8
         Substrate* s = new Substrate(r1,true,false,false,0);
         Substrate* h = new Substrate(hid,false,false,false,1);
 	Substrate* t = new Substrate(r2,false,true,false,2);

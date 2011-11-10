@@ -48,7 +48,7 @@ class evaluator {
  double distance(evaluator*a);
  int complexity();
  void save(const char*fn);
- void load(const char*fn);
+ static evaluator* load(const char*fn);
  evaluator* copy();
  evaluator();
  ~evaluator();

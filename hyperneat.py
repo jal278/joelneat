@@ -199,7 +199,8 @@ class evaluator(_object):
     def distance(self, *args): return _hyperneat.evaluator_distance(self, *args)
     def complexity(self): return _hyperneat.evaluator_complexity(self)
     def save(self, *args): return _hyperneat.evaluator_save(self, *args)
-    def load(self, *args): return _hyperneat.evaluator_load(self, *args)
+    __swig_getmethods__["load"] = lambda x: _hyperneat.evaluator_load
+    if _newclass:load = staticmethod(_hyperneat.evaluator_load)
     def copy(self): return _hyperneat.evaluator_copy(self)
     def __init__(self): 
         this = _hyperneat.new_evaluator()
@@ -211,6 +212,10 @@ class evaluator(_object):
     def mutate(self): return _hyperneat.evaluator_mutate(self)
 evaluator_swigregister = _hyperneat.evaluator_swigregister
 evaluator_swigregister(evaluator)
+
+def evaluator_load(*args):
+  return _hyperneat.evaluator_load(*args)
+evaluator_load = _hyperneat.evaluator_load
 
 
 

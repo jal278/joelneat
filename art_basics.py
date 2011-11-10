@@ -349,6 +349,7 @@ def create_new_pop_gen(oldpop,rate=0.3,psize=None):
  #elitism
  newpop.append(oldpop[-1].copy())
 
+
  oldpop.sort(key=lambda k:k.fitness)
  eligpop=oldpop[int(rate*len(oldpop)):]
   
@@ -441,4 +442,7 @@ def make_new(ind):
  child=ind.copy()
  if(random.random()>0.2):
   child.mutate()
+ #make random offspring
+ if(random.random()<0.01):
+  child=ind.__class__()
  return child
