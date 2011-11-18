@@ -1,7 +1,15 @@
 import hyperneat
-import numpy
 from PIL import Image
 import PIL
+from array import array
+def to_image(obj):
+ out_array = []
+ sz=len(obj)
+ for row in obj:
+  out_array+=row
+ arr=array('B',out_array)
+ return PIL.Image.fromstring('L',(sz,sz),arr.tostring())
+
 def render(in_fname,out_fname):
  newartist=hyperneat.artist()
  newartist.load(in_fname)
@@ -19,6 +27,7 @@ def render_artist(newartist,out_fname):
  newartist.render_big()
  print "converting..."
  obj=newartist.get_big()
- out=Image.fromarray(numpy.array(obj))
+ out=to_image(obj)
+ #out=Image.fromarray(numpy.array(obj))
  out=out.convert("RGB")
  out.save(out_fname)
