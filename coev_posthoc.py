@@ -23,11 +23,11 @@ def load_all(gen):
  critic_pop=load_pop(load_dir+"crit%d",100,critic_class)
  return (nectar_pop,nectarless_pop,critic_pop)
 
-def load_best(gen,amt=5):
+def load_best(gen,amt=4):
  global load_dir_base
  load_dir = load_dir_base % gen
  bests=[]
- for k in range(2):
+ for k in range(amt):
   bests.append(hyperneat.artist.load(load_dir+"art%d_0" % k))
  critic = critic_class.load(load_dir+"crit0")
  return (bests,critic)
@@ -55,10 +55,21 @@ hyperneat.artist.random_seed()
 def render(outdir):
  for k in range(250,0,-50):
   print "Rendering ",k
-  bests,critic=load_best(k,2)
+  bests,critic=load_best(k,4)
+  render_critic(critic,"%s/crit%d.png" % (outdir,k))
+  scores=[]
   for j in range(len(bests)):
+   bests[j].render_all()
    render_artist(bests[j],"%s/art%d_%d.png" % (outdir,k,j))
-   render_critic(critic,"%s/crit%d.png" % (outdir,k))
+   score = critic.evaluate_all(bests[j])    
+   scores.append((score,j))
+  scores.sort(reverse=True)
+  scores,ranks=zip(*scores)
+  score_out = open("%s/scores%d.txt"%(outdir,k),"w")
+  for ind in range(len(scores)):
+   num=ranks.index(ind)
+   score_out.write(str(num+1)+": " + str(scores[num])+"\n")
+  
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
