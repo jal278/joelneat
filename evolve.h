@@ -11,11 +11,12 @@ using namespace std;
 #include "display_cppn.h"
 #include "tinyxml/tinyxml.h"
 
-
 //#define SX 64
 //#define SY 64
 #define SX 16
 #define SY 16
+
+#define PICNUM 1
 
 #define LARGESX 256
 #define LARGESY 256
@@ -26,13 +27,28 @@ using namespace std;
 #include <gsl/gsl_wavelet2d.h>
 
 class evaluator;
-
 extern double bigbuff[LARGESX*LARGESY];
+extern double coordarray[10][SX*SY*4];
+
+PyObject *to_array(double* buffer,int , int );
+void init_coordarray();
+void initialize(); 
+
 class artist {
 public:
  bool rendered;
  bool isrendered() { return rendered; }
  double buffer[SX*SY];
+
+ //for multiple noisy pictures
+ double buffers[PICNUM][SX*SY];
+
+ void clear_all() {
+ for(int j=0;j<PICNUM;j++)
+  for(int i=0;i<SX*SY;i++)
+	buffers[j][i]=0.0;
+ }
+
  void clear_picture() {
   for (int i=0;i<SX*SY;i++)
    buffer[i]=0.0;
@@ -72,6 +88,7 @@ public:
  void save(const char *fname) {
   orig->save(fname);
  }
+
  void load_new(const char *fname) {
   delete orig;
   orig = CPPN::load(fname);
@@ -118,7 +135,14 @@ public:
   orig->change();
  }
 
+ PyObject *get_picture_num(int i) {
+  return get_picture_generic(buffers[i]);
+ }
  PyObject *get_picture() {
+  return get_picture_generic(buffer);
+ }
+
+ PyObject *get_picture_generic(double* buffer) {
   int offset=0;
   PyObject* ret = PyList_New(SY);
    for(int y=0;y<SY;y++) {
@@ -159,6 +183,17 @@ public:
   return buffer; 
  }
 
+ double* render_all() {
+  rendered=true;
+  for(int i=0;i<PICNUM;i++)
+   render_opt(i);
+ }
+
+ double* render_opt(int index) {
+  rendered=true;
+  gen_buffer_opt(buffers[index],orig,coordarray[index],SX*SY);
+ }
+
  ~artist() {
   delete orig;
   delete s;
@@ -178,6 +213,12 @@ class evaluator {
  void save(const char* fn) {
   net->save(fn);
  }
+
+ PyObject* get_weights() {
+  net->flush();
+  return to_array(net->cppns[0]->weight_matrix,SX,SY); 
+ }
+
  static evaluator* load(const char *fn) {
   evaluator* ret = new evaluator();
   delete ret->net;
@@ -191,6 +232,7 @@ class evaluator {
  int complexity()  {
   return net->complexity();
  }
+
  evaluator() {
         vector<int> r1;
 	vector<int> r2;
@@ -203,28 +245,54 @@ class evaluator {
         Substrate* h = new Substrate(hid,false,false,false,1);
 	Substrate* t = new Substrate(r2,false,true,false,2);
         Substrate* b = new Substrate(r2,false,false,true,3);
-        //CPPN* orig= new CPPN(s,t,10,true);
-        CPPN* orig= new CPPN(s,h,10,true);
-        CPPN* orig2= new CPPN(h,t,10,true);
-        CPPN* bias= new CPPN(b,h,Singleton::next_inno());
+
+	bool single_layer=true;
+	CPPN *orig,*orig2,*bias;
+
+  	if(single_layer) {
+         orig= new CPPN(s,t,10,true);
+         bias= new CPPN(b,t,Singleton::next_inno());
+	}
+ 	else {
+          orig= new CPPN(s,h,10,true);
+          orig2= new CPPN(h,t,10,true);
+          bias= new CPPN(b,h,Singleton::next_inno());
+	}
+
         vector<Substrate*> v1;
         vector<CPPN*> v2;
+
         v1.push_back(s);
         v1.push_back(b);
-        v1.push_back(h);
-        v1.push_back(t);
-       // t->in_conn.push_back(orig);
-       // s->out_conn.push_back(orig);
-       // t->in_conn.push_back(bias);
-       // b->out_conn.push_back(bias);
+	if(!single_layer) {
+        	v1.push_back(h);
+	}
+	v1.push_back(t);
+
         v2.push_back(orig);
-        v2.push_back(orig2);
+	if(!single_layer)
+        	v2.push_back(orig2);
         v2.push_back(bias);
         net = new Network(v1,v2);
  }
  void mutate() {
   net->mutate();
  }
+ double evaluate_all(artist* a) {
+  // cout << "loading inputs" << endl;
+ double temp=0.0;
+ for(int i=0;i<PICNUM;i++) {
+  net->inputs[0]->load_in(a->buffers[i]);
+ // cout << "activating" << endl;
+  for(int k=0;k<2;k++)
+   net->activate();
+  //cout << "done" <<endl;
+  temp += net->outputs[0]->activation;
+ }
+  if (isnan(temp)) return 0.0;
+  return temp;
+ }
+
  double evaluate_artist(artist* a) {
  // cout << "loading inputs" << endl;
   net->inputs[0]->load_in(a->buffer);

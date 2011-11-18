@@ -2,11 +2,9 @@
 #from scipy.stats.stats import kendalltau
 import hyperneat
 import random
-from guppy import hpy
 
 import pygame
 from pygame.locals import *
-import gc
 from art_basics import *
 
 #gc.set_debug(gc.DEBUG_LEAK | gc.DEBUG_STATS)

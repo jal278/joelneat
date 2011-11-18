@@ -66,6 +66,10 @@ except AttributeError:
     _newclass = 0
 
 
+
+def initialize():
+  return _hyperneat.initialize()
+initialize = _hyperneat.initialize
 class feature_detector(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, feature_detector, name, value)
@@ -144,9 +148,11 @@ class artist(_object):
     def distance(self, *args): return _hyperneat.artist_distance(self, *args)
     def get_nanflag(self): return _hyperneat.artist_get_nanflag(self)
     def clear_picture(self): return _hyperneat.artist_clear_picture(self)
+    def clear_all(self): return _hyperneat.artist_clear_all(self)
     def save(self, *args): return _hyperneat.artist_save(self, *args)
     def load_new(self, *args): return _hyperneat.artist_load_new(self, *args)
     def save_xml(self): return _hyperneat.artist_save_xml(self)
+    def render_opt(self, *args): return _hyperneat.artist_render_opt(self, *args)
     __swig_getmethods__["load"] = lambda x: _hyperneat.artist_load
     if _newclass:load = staticmethod(_hyperneat.artist_load)
     __swig_getmethods__["load_xml"] = lambda x: _hyperneat.artist_load_xml
@@ -163,6 +169,7 @@ class artist(_object):
     __swig_destroy__ = _hyperneat.delete_artist
     __del__ = lambda self : None;
     def copy(self): return _hyperneat.artist_copy(self)
+    def render_all(self): return _hyperneat.artist_render_all(self)
     def render_picture(self): return _hyperneat.artist_render_picture(self)
     def isrendered(self): return _hyperneat.artist_isrendered(self)
     def mutate(self): return _hyperneat.artist_mutate(self)
@@ -171,6 +178,7 @@ class artist(_object):
     def render_big(self): return _hyperneat.artist_render_big(self)
     def get_big(self): return _hyperneat.artist_get_big(self)
     def get_picture(self): return _hyperneat.artist_get_picture(self)
+    def get_picture_num(self, *args): return _hyperneat.artist_get_picture_num(self, *args)
 artist_swigregister = _hyperneat.artist_swigregister
 artist_swigregister(artist)
 
@@ -196,6 +204,7 @@ class evaluator(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, evaluator, name)
     __repr__ = _swig_repr
+    def get_weights(self): return _hyperneat.evaluator_get_weights(self)
     def distance(self, *args): return _hyperneat.evaluator_distance(self, *args)
     def complexity(self): return _hyperneat.evaluator_complexity(self)
     def save(self, *args): return _hyperneat.evaluator_save(self, *args)
@@ -208,6 +217,7 @@ class evaluator(_object):
         except: self.this = this
     __swig_destroy__ = _hyperneat.delete_evaluator
     __del__ = lambda self : None;
+    def evaluate_all(self, *args): return _hyperneat.evaluator_evaluate_all(self, *args)
     def evaluate_artist(self, *args): return _hyperneat.evaluator_evaluate_artist(self, *args)
     def mutate(self): return _hyperneat.evaluator_mutate(self)
 evaluator_swigregister = _hyperneat.evaluator_swigregister

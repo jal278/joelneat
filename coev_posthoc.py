@@ -23,11 +23,11 @@ def load_all(gen):
  critic_pop=load_pop(load_dir+"crit%d",100,critic_class)
  return (nectar_pop,nectarless_pop,critic_pop)
 
-def load_best(gen):
+def load_best(gen,amt=5):
  global load_dir_base
  load_dir = load_dir_base % gen
  bests=[]
- for k in range(5):
+ for k in range(2):
   bests.append(hyperneat.artist.load(load_dir+"art%d_0" % k))
  critic = critic_class.load(load_dir+"crit0")
  return (bests,critic)
@@ -53,20 +53,24 @@ def hillclimb(trials,critic,target):
 hyperneat.artist.random_seed()
 
 def render(outdir):
- for k in range(1500,0,-50):
+ for k in range(1400,0,-50):
   print "Rendering ",k
-  bests,critic=load_best(k)
+  bests,critic=load_best(k,2)
   for j in range(len(bests)):
    render_artist(bests[j],"%s/art%d_%d.png" % (outdir,k,j))
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
+basedir="blah2"
+set_base(basedir)
+outdir="blah2"
+render(outdir)
 """
-for k in range(20):
+for k in range(30,40):
  print "rendering %d" % k
- basedir = "artcov/run%d" % k
+ basedir = "hartcov/run%d" % k
  set_base(basedir)
- outdir = "render/cov%d/" %k
+ outdir = "render/hcov%d/" %k
  os.mkdir(outdir)
  render(outdir)
 """

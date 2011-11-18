@@ -1,13 +1,23 @@
 import hyperneat
 import numpy
 from PIL import Image
-
+import PIL
 def render(in_fname,out_fname):
  newartist=hyperneat.artist()
  newartist.load(in_fname)
  render_artist(newartist,out_fname)
+def render_small(newartist,out_fname,opt):
+ newartist.render_opt(opt)
+ obj=newartist.get_picture()
+ out=Image.fromarray(numpy.array(obj)*255)
+ out=out.convert("RGB")
+ out=out.resize((128,128),Image.BICUBIC)
+ out.save(out_fname)
+
 def render_artist(newartist,out_fname):
+ print "rendering..."
  newartist.render_big()
+ print "converting..."
  obj=newartist.get_big()
  out=Image.fromarray(numpy.array(obj))
  out=out.convert("RGB")

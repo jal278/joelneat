@@ -4,6 +4,8 @@
 #include "evolve.h"
 %}
 
+void initialize();
+
 class feature_detector {
 public:
 static double average(artist* a); 
@@ -22,9 +24,11 @@ class artist {
   double distance(artist*a);
   bool get_nanflag();
   void clear_picture();
+  void clear_all(); 
   void save(const char*fn);
   void load_new(const char*fn);
   const char* save_xml();
+  double* render_opt(int index);
   static artist* load(const char*fn);
   static artist* load_xml(const char*txt);
   int complexity();
@@ -33,6 +37,7 @@ class artist {
   artist();
   ~artist();
   artist* copy();
+  double* render_all();
   double* render_picture();
   bool isrendered();
   void mutate();
@@ -41,10 +46,12 @@ class artist {
   double* render_big();
   PyObject* get_big();
   PyObject* get_picture();
+  PyObject *get_picture_num(int i);
 };
 
 class evaluator {
  public:
+ PyObject* get_weights(); 
  double distance(evaluator*a);
  int complexity();
  void save(const char*fn);
@@ -52,6 +59,7 @@ class evaluator {
  evaluator* copy();
  evaluator();
  ~evaluator();
+ double evaluate_all(artist* a);
  double evaluate_artist(artist* a);
  void mutate();
 };
