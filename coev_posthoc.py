@@ -58,6 +58,7 @@ def render(outdir):
   bests,critic=load_best(k,2)
   for j in range(len(bests)):
    render_artist(bests[j],"%s/art%d_%d.png" % (outdir,k,j))
+   render_critic(critic,"%s/crit%d.png" % (outdir,k))
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
