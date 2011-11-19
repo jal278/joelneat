@@ -20,7 +20,7 @@ void init_coordarray()
  {
  double theta=0.0;
  for(int x=0;x<6;x++) 
-    create_coordarray(coordarray[x],SX,SY,0.0); //x*6.28/6);	
+    create_coordarray(coordarray[x],SX,SY,x*6.28/6);	
 }
 
 void initialize() {

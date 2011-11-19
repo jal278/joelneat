@@ -12,6 +12,7 @@ def create_flowers(size,num):
   pops.append(tpop)
  return pops
 
+
 def create_critics(size): 
  critic_pop=[]
  for k in range(size):
@@ -20,3 +21,13 @@ def create_critics(size):
    critic_pop.append(new_critic)
  return critic_pop
 
+def bee_create_critics(size,count): 
+ critic_pops=[]
+ for j in range(count):
+  critic_pop=[]
+  for k in range(size):
+   new_critic=critic_class()
+   new_critic.fitness=0
+   critic_pop.append(new_critic)
+  critic_pops.append(critic_pop)
+ return critic_pops

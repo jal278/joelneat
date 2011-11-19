@@ -1,6 +1,8 @@
 #include "display_cppn.h"
 #include <math.h>
 
+#define NOISYPIC
+
 
 void create_coordarray(double* coordarray,int sx,int sy,double theta) {
  int offset=0;
@@ -27,18 +29,17 @@ void create_coordarray(double* coordarray,int sx,int sy,double theta) {
 
      }
 }
-static bool noise=true;
 void gen_buffer_opt(double* buf, CPPN* c,double* coordarray,int arraysize)
 {
 for(int x=0;x<arraysize;x++)
 {
-if(noise) {
  double val=(c->query_net(coordarray)+1.0)/2.0;
- if(noise)
-  val+=randfloat()*0.2-0.1;
+#ifdef NOISYPIC
+val+=randfloat()*0.2-0.1;
+#endif
  buf[x]=val;
  coordarray+=4;
-}
+
 
 }
 

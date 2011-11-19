@@ -103,7 +103,6 @@ public:
 	r1.push_back(1);
 	r1.push_back(1);
 	r1.push_back(1);
-	r1.push_back(1);
         s = new Substrate(r1,true,false,false,0);
 	t = new Substrate(r2,false,true,false,1);
         orig= new CPPN(s,t,10,false);
@@ -246,7 +245,7 @@ class evaluator {
 	Substrate* t = new Substrate(r2,false,true,false,2);
         Substrate* b = new Substrate(r2,false,false,true,3);
 
-	bool single_layer=true;
+	bool single_layer=false;
 	CPPN *orig,*orig2,*bias;
 
   	if(single_layer) {

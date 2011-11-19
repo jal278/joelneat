@@ -405,7 +405,7 @@ public:
 
 class CPPN:public individual
 {
-public:
+   public:
 	bool created;
 	bool trivial;
         double trivial_weight;
@@ -437,7 +437,7 @@ public:
 	void fix_weights();	
 	void mutate_links()
 	{
-        for(int x=0;x<connections.size();x++)
+          for(int x=0;x<connections.size();x++)
             connections[x]->mutate(true);
   	  }
 	
@@ -792,7 +792,7 @@ public:
 			}
 			mul*=out_res[x];
 		}
-
+		int tsize = isize+out_res.size();
 		total_res.insert(total_res.end(),inp_res.begin(),inp_res.end());
 		total_res.insert(total_res.end(),out_res.begin(),out_res.end());
 		total_mult.insert(total_mult.end(),inp_mult.begin(),inp_mult.end());
@@ -817,11 +817,16 @@ public:
             */
 			bool b=false;
 			
-			
-			double the_weight=query_net(coordinate); //query with current coordinates
+	    //perhaps integrate LEO at some time		
+	    double squared=0.0;
+ 	    for(int kk=0;kk<tsize;kk++)
+		squared+=coordinate[kk]*coordinate[kk];
+            coordinate[tsize]=squared/2.0;
+
+	    double the_weight=query_net(coordinate); //query with current coordinates
             		
             //suppress weight
-            double cutoff=0.2;
+            double cutoff=0.3;
             if(absd(the_weight)<cutoff)
             {
                 the_weight=0.0;
@@ -1033,7 +1038,12 @@ public:
 		c.reserve(10);
 
 		//add inputs for each dimension of source & target substrate
-		for(int x=0;x<source->dim;x++)
+		bool r_input=true;
+		int inp_nodes = source->dim;
+		if(r_input)
+		 inp_nodes++;
+
+		for(int x=0;x<inp_nodes;x++)
 			n.push_back(new Node(true,false,false,0,temp_inno++));
 
 		for(int x=0;x<target->dim;x++)

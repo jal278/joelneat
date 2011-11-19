@@ -31,12 +31,11 @@ def grade_flowers(flower_pop,best_critics):
   k.raw_fitness=k.fitness
 
 def flower_iteration(flower_pops,best_critics,specs):
- count=0
 
- nectartypes=[0]*len(flower_pops)
- nectartypes[0]=1
+ nectartypes=range(flower_pops)
  print "# critics",len(best_critics)
 
+ count=0
  for flower_pop in flower_pops:
   for art in flower_pop:
    if(not art.isrendered()):
@@ -218,23 +217,27 @@ if(len(sys.argv)>2):
 direc=sys.argv[1]
 os.system("mkdir %s" % direc)
 
-critic_pop=[]
-critic_pop_size=80
-flower_pop_size=80
-flower_pop_count=4
+critic_pops=[]
+critic_pop_size=10
+critic_pop_count=10
+flower_pop_size=10
+flower_pop_count=10
 speciation=True
 
-critic_speciator=Speciator(2.0,4)
-flower_speciators=[Speciator(20.0,4) for k in range(flower_pop_count)]
+critic_speciator=Speciator(2.0,2)
+flower_speciators=[Speciator(20.0,2) for k in range(flower_pop_count)]
 flower_pops=[]
 flower_archive=[]
 
+"""
 log_file=open(direc+"/log.dat","w")
 log_file.write("##|##\n")
 log_file.write("generation|")
 for k in range(flower_pop_count):
  log_file.write("p%d|"%k)
 log_file.write("critic\n")
+"""
+
 if(False):
  load_dir=direc+"/generation800/"
  nectar_pop=load_pop(load_dir+"nart%d",flower_pop_size,hyperneat.artist)
@@ -242,7 +245,7 @@ if(False):
  critic_pop=load_pop(load_dir+"crit%d",critic_pop_size,critic_class)
 else:
  flower_pops = create_flowers(flower_pop_size,flower_pop_count)
- critic_pop = create_critics(critic_pop_size)
+ critic_pop = bee_create_critics(critic_pop_size,critic_pop_count)
 
 bestcount=10
 critic_best=critic_pop[:bestcount]
@@ -302,4 +305,4 @@ while(True):
  if(gen==1500):
   break
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
- log_file.flush()
+ #log_file.flush()
