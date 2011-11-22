@@ -53,7 +53,7 @@ def hillclimb(trials,critic,target):
 hyperneat.artist.random_seed()
 
 def render(outdir):
- for k in range(250,0,-50):
+ for k in range(1500,0,-50):
   print "Rendering ",k
   bests,critic=load_best(k,4)
   render_critic(critic,"%s/crit%d.png" % (outdir,k))
@@ -73,7 +73,7 @@ def render(outdir):
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
-basedir="covhn2"
+basedir="test"
 set_base(basedir)
 outdir="render"
 render(outdir)
