@@ -441,9 +441,9 @@ def fuss_create_new_pop(oldpop,evalf,count=50):
 
 def make_new(ind):
  child=ind.copy()
- if(random.random()>0.2):
+ if(random.random()>0.1):
   child.mutate()
  #make random offspring
- if(random.random()<0.01):
-  child=ind.__class__()
+ #if(random.random()<0.01):
+ # child=ind.__class__()
  return child

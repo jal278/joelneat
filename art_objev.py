@@ -3,11 +3,9 @@
 import os
 import hyperneat
 import random
-from guppy import hpy
 
 import pygame
 from pygame.locals import *
-import gc
 from art_basics import *
 
 #gc.set_debug(gc.DEBUG_LEAK | gc.DEBUG_STATS)
@@ -65,8 +63,8 @@ import sys
 objectives=[]
 
 obj_popsize=50
-art_popsize=10
-evals=100
+art_popsize=5
+evals=20
 debug=False
 quit=False
 

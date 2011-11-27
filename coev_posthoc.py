@@ -33,6 +33,15 @@ def load_beeart(gen):
   art.append(hyperneat.artist.load(k))
  return art
 
+def load_beecrit(gen):
+ global load_dir_base
+ load_dir = load_dir_base % gen
+ arts = load_dir+"crit*"
+ art=[]
+ for k in glob.glob(arts):
+  art.append(critic_class.load(k))
+ return art
+
 def load_best(gen,amt=4):
  global load_dir_base
  load_dir = load_dir_base % gen
@@ -101,11 +110,14 @@ def render(outdir):
   
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
+"""
 #for rendering a whole coev set of runs
 basedir="test2"
 set_base(basedir)
 outdir="render2"
 render_bee(outdir)
+"""
+
 """
 for k in range(30,40):
  print "rendering %d" % k
@@ -116,8 +128,8 @@ for k in range(30,40):
  render(outdir)
 """
 
-def evol_test():
- critic = critic_class.load(direc+"/generation850/crit0")
+def evol_test(index):
+ critic = critic_class.load(direc+"/generation1050/crit%d" % index)
 
  population=[]
  for k in range(200):
@@ -162,7 +174,30 @@ def load_maps(fname):
  lines=open(fname).read().split("\n")[:-1]
  return [[float(l) for l in k.split()] for k in lines]
 
+def sample_beetest(outf):
+ global samples
+ art=load_beeart(50)
+ crit=load_beecrit(50)
+ print len(art),len(crit)
+ #outfile=open(outf,"w")
+ for index in range(len(art)):
+  a = art[index]
+  c = crit[index]
 
+  a.render_picture()
+  f=c.evaluate_artist(a)
+
+  sampled_fit = map(c.evaluate_map,samples)
+  mfit = max(sampled_fit)
+  firstbeat=len(samples)
+  for j in xrange(0,len(sampled_fit)):
+   if sampled_fit[j]>f:
+     firstbeat=j
+     break
+  outstr = " ".join(map(str,(index,f,mfit,firstbeat)))
+  print outstr
+
+ #outfile.write(outstr+"\n")
 def sample_test(outf): 
  global samples
  outfile=open(outf,"w")
@@ -189,11 +224,10 @@ def sample_test(outf):
 samples=[]
 print "loading samples..."
 
-"""
-for k in range(10):
+
+for k in [0,10]: #range(10):
  print k
  samples+=load_maps("samples/samples%d.txt"%k)
-"""
 
 """
 for k in range(20):
@@ -201,6 +235,10 @@ for k in range(20):
  samples+=load_maps("artnov/run%d/generation500/arc_behaviorlist"%k)
  samples+=load_maps("artnov/run%d/generation500/pop_behaviorlist"%k)
 """
+
+basedir="test2"
+set_base(basedir)
+sample_beetest("test.out")
 
 """
 for k in range(20):
@@ -210,9 +248,6 @@ for k in range(20):
  outf = "artcov%d_sample.out" % k
  sample_test(outf)
 """
-
-set_base("artcov")
-render("render")
 
 def map_novelty(direc,gen,outfile):
  test_pop=load_pop(direc+"/generation%d/" % gen+ "art%d" ,400,hyperneat.artist)
