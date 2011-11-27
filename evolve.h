@@ -11,10 +11,14 @@ using namespace std;
 #include "display_cppn.h"
 #include "tinyxml/tinyxml.h"
 
-//#define SX 64
-//#define SY 64
+
+#ifdef SMALL
 #define SX 16
 #define SY 16
+#else
+#define SX 64
+#define SY 64
+#endif
 
 #define PICNUM 1
 

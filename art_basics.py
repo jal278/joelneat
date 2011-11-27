@@ -170,7 +170,8 @@ class feature_critic:
    for k in range(len(self.active)):
     fit+= (1.0 - abs(m[self.active[k]]-self.targets[k]))*self.weights[k] 
    return fit
-
+ def evaluate_all(self,a):
+   return self.evaluate_artist(a)
  def evaluate_artist(self,a):
    vals=[]
    if not hasattr(a,'mapped'):
@@ -231,8 +232,8 @@ class feature_critic:
    new=pickle.loads(string)
    return new
 
-#critic_class = feature_critic
-critic_class = hyperneat.evaluator
+critic_class = feature_critic
+#critic_class = hyperneat.evaluator
 
 def load_objective(size,gen,n):
  d = "generation%s/" % gen

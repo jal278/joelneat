@@ -2,6 +2,7 @@ import os
 import hyperneat
 import random
 import sys
+import glob
 from art_basics import *
 from art_coev_basics import *
 from render_help import *
@@ -22,6 +23,15 @@ def load_all(gen):
  nectarless_pop=load_pop(load_dir+"art%d",100,hyperneat.artist)
  critic_pop=load_pop(load_dir+"crit%d",100,critic_class)
  return (nectar_pop,nectarless_pop,critic_pop)
+
+def load_beeart(gen):
+ global load_dir_base
+ load_dir = load_dir_base % gen
+ arts = load_dir+"art*"
+ art=[]
+ for k in glob.glob(arts):
+  art.append(hyperneat.artist.load(k))
+ return art
 
 def load_best(gen,amt=4):
  global load_dir_base
@@ -52,8 +62,27 @@ def hillclimb(trials,critic,target):
 
 hyperneat.artist.random_seed()
 
+def render_bee(outdir):
+ for k in range(0,1200,50):
+  print "Rendering ",k
+  arts=load_beeart(k)
+  #crits=load_beecrit(k)
+  #render_critic(critic,"%s/crit%d.png" % (outdir,k))
+  scores=[]
+  for j in range(len(arts)):
+   arts[j].render_all()
+   render_artist(arts[j],"%s/art%d_%d.png" % (outdir,k,j))
+   #score = critic[j].evaluate_all(arts[j])    
+   #scores.append((score,j))
+  #scores.sort(reverse=True)
+  #scores,ranks=zip(*scores)
+  #score_out = open("%s/scores%d.txt"%(outdir,k),"w")
+  #for ind in range(len(scores)):
+  # num=ranks.index(ind)
+  # score_out.write(str(num+1)+": " + str(scores[num])+"\n")
+
 def render(outdir):
- for k in range(1500,0,-50):
+ for k in range(0,1200,50):
   print "Rendering ",k
   bests,critic=load_best(k,4)
   render_critic(critic,"%s/crit%d.png" % (outdir,k))
@@ -73,10 +102,10 @@ def render(outdir):
   #open("%s/critic%d.txt"%(outdir,k),"w").write(str(critic))
 
 #for rendering a whole coev set of runs
-basedir="test"
+basedir="test2"
 set_base(basedir)
-outdir="render"
-render(outdir)
+outdir="render2"
+render_bee(outdir)
 """
 for k in range(30,40):
  print "rendering %d" % k

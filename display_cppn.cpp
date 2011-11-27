@@ -1,7 +1,7 @@
 #include "display_cppn.h"
 #include <math.h>
 
-#define NOISYPIC
+//#define NOISYPIC
 
 
 void create_coordarray(double* coordarray,int sx,int sy,double theta) {

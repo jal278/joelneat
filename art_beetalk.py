@@ -6,6 +6,7 @@ import random
 from art_basics import *
 from art_coev_basics import *
 
+
 hyperneat.initialize()
 
 def grade_flowers(flower_pop,best_critics):
@@ -27,9 +28,9 @@ def grade_flowers(flower_pop,best_critics):
    for k in range(len(flower_pop)):
     art = flower_pop[ranks[k]]
     if(art.nectar==crit.nectar):
-     art.fitness+=k #scores[k]
-    else:
-     art.fitness-=(k/50.0)
+     art.fitness+=scores[k]
+    #else:
+    # art.fitness-=(k/50.0)
 
  for k in flower_pop:
   k.raw_fitness=k.fitness
@@ -43,10 +44,10 @@ def flower_iteration(flower_pops,best_critics,specs):
  for flower_pop in flower_pops:
   for art in flower_pop:
    if(not art.isrendered()):
-    art.render_all()
-   if(art.get_nanflag()):
+    art.render()
+  if(art.get_nanflag()):
     art.fitness = -10000.0
-    art.clear_all()
+    art.clear()
    else:
     art.fitness=0.0
    art.nectar=nectartypes[count]
@@ -60,7 +61,7 @@ def flower_iteration(flower_pops,best_critics,specs):
  pop_tots=[]
  for pop in flower_pops:
   pop.sort(key=lambda k:k.fitness,reverse=True)
-  best_art.append(pop[:2])
+  best_art.append(pop[:1])
   flower_best.append(pop[0])
   pop_tots.append(sum([k.fitness for k in pop[:2]]))
 
@@ -95,9 +96,9 @@ def flower_repro(flower_pops,speciators):
    
 def grade_critics(critic_pops,best_art):
  global flower_archive
- best=best_art[0]
+
  random.shuffle(best_art)
- trial_pop = best_art #+flower_archive
+ trial_pop = best_art #+ flower_archive
 
  for critic_pop in critic_pops:
   for crit in critic_pop:
@@ -118,10 +119,10 @@ def grade_critics(critic_pops,best_art):
      crit.fitness+=count**2
     count+=1 
    crit.raw_fitness=crit.fitness
- if random.random()<0.3:
-  best.nectar=-1 
-  flower_archive.append(best)
-  print "added to archive..."
+ #if random.random()<0.3:
+ # best.nectar=-1 
+ # flower_archive.append(best)
+ # print "added to archive..."
  
 def critic_iteration(critic_pops,best_art):
  global speciation
@@ -172,8 +173,12 @@ if(render):
  screen.blit(background, (0, 0))
  pygame.display.flip()
 
-SX=SY=16
-PXS = 8
+small=False
+SX=SY=64
+PXS=2
+if small:
+ SX=SY=16
+ PXS = 8
 
 def render_critic(x,y,pxsize,data):
  global render,screen,background,SX,SY
@@ -213,6 +218,7 @@ def render_critic(x,y,pxsize,data):
     g=val
    pygame.draw.rect(background, (r,g,b), (x+xc*pxsize,y+yc*pxsize,pxsize,pxsize),0)
 
+
 def render_picture(nectar,x,y,pxsize,data):
  global render,screen,background,SX,SY
  if(not render):
@@ -236,9 +242,9 @@ os.system("mkdir %s" % direc)
 
 critic_pops=[]
 critic_pop_size=10
-critic_pop_count=50
+critic_pop_count=2
 flower_pop_size=10
-flower_pop_count=50
+flower_pop_count=2
 speciation=True
 
 critic_speciators=[Speciator(2.0,2) for k in range(1000)]
@@ -297,6 +303,7 @@ while(True):
   critic_pops,best_critics,score_critic=critic_iteration(critic_pops,best_art)
  
  critic_best=best_critics
+ best_crit=critic_best[:]
  best_art.sort(key=lambda k:k.raw_fitness,reverse=True)
  
  #health = sum([k.nectar for k in best_art[:10]])
@@ -308,7 +315,7 @@ while(True):
   gs=4
   for k in range(3):
    render_critic(725,0+180*k,PXS,critic_best[k].get_weights())
-  for k in range(16):
+  for k in range(min(16,len(flower_pops))):
    ind = flower_best[k]
    render_picture(ind.nectar,25+(k%gs)*180,25+(k/gs)*180,PXS,ind.get_picture_num(0))
   screen.blit(background,(0,0))
@@ -317,11 +324,13 @@ while(True):
  if((gen)%50==0):
   directory="%s/generation%d"%(direc,gen)
   os.system("mkdir %s" % directory)
-  #cfname = directory+"/crit%d"
-  #save_pop(critic_pop,cfname)
-  for k in range(len(best_artworks)):
-   afname = directory+"/art%d" %k +"_%d"
-   save_pop(best_artworks[k],afname)
+  for k in range(len(best_crit)):
+   cfname = directory+"/crit%d" %k 
+   best_crit[k].save(cfname)
+
+  for k in range(len(best_art)):
+   afname = directory+"/art%d" %k 
+   best_art[k].save(afname)
  if(gen==1500):
   break
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))
