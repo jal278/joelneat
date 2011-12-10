@@ -28,8 +28,11 @@ def load_beeart(gen):
  global load_dir_base
  load_dir = load_dir_base % gen
  arts = load_dir+"art*"
+ artfn = load_dir+"art%d"
+ amt = len(glob.glob(arts))
  art=[]
- for k in glob.glob(arts):
+ for l in range(amt):
+  k = artfn%l
   art.append(hyperneat.artist.load(k))
  return art
 
@@ -37,8 +40,11 @@ def load_beecrit(gen):
  global load_dir_base
  load_dir = load_dir_base % gen
  arts = load_dir+"crit*"
+ artfn = load_dir+"crit%d"
+ amt = len(glob.glob(arts))
  art=[]
- for k in glob.glob(arts):
+ for l in range(amt):
+  k = artfn%l
   art.append(critic_class.load(k))
  return art
 
@@ -72,7 +78,7 @@ def hillclimb(trials,critic,target):
 hyperneat.artist.random_seed()
 
 def render_bee(outdir):
- for k in range(0,1200,50):
+ for k in range(0,700,50):
   print "Rendering ",k
   arts=load_beeart(k)
   #crits=load_beecrit(k)
@@ -89,6 +95,19 @@ def render_bee(outdir):
   #for ind in range(len(scores)):
   # num=ranks.index(ind)
   # score_out.write(str(num+1)+": " + str(scores[num])+"\n")
+
+def render_novelty(outdir,gen):
+ global load_dir_base
+ load_dir = load_dir_base % gen
+ archive=glob.glob(load_dir+"archive*")
+ archive_fn=(load_dir+"archive%d")
+ cnt=len(archive)
+ inds = []
+ for k in range(cnt):
+  fn = archive_fn%k
+  print fn
+  inds.append(hyperneat.artist.load(fn))
+  render_artist(inds[-1],"%s/archive%d_%d.png" % (outdir,gen,k))
 
 def render(outdir):
  for k in range(0,1200,50):
@@ -174,19 +193,32 @@ def load_maps(fname):
  lines=open(fname).read().split("\n")[:-1]
  return [[float(l) for l in k.split()] for k in lines]
 
-def sample_beetest(outf):
+def sample_beetest(outf,gen):
  global samples
- art=load_beeart(50)
- crit=load_beecrit(50)
+ art=load_beeart(gen)
+ crit=load_beecrit(gen)
  print len(art),len(crit)
  #outfile=open(outf,"w")
+ print "rendering"
+
+ for k in range(len(art)):
+  art[k].render_picture()
+  print k
+
  for index in range(len(art)):
   a = art[index]
   c = crit[index]
-
+  
   a.render_picture()
   f=c.evaluate_artist(a)
 
+  fs=[]
+  for k in range(len(art)):
+   fs.append(c.evaluate_artist(art[k]))
+  bet=len(filter(lambda x:x>f,fs))
+
+  print "summary:",f,bet
+  
   sampled_fit = map(c.evaluate_map,samples)
   mfit = max(sampled_fit)
   firstbeat=len(samples)
@@ -220,7 +252,7 @@ def sample_test(outf):
 
   outfile.write(outstr+"\n")
 
-
+"""
 samples=[]
 print "loading samples..."
 
@@ -228,6 +260,7 @@ print "loading samples..."
 for k in [0,10]: #range(10):
  print k
  samples+=load_maps("samples/samples%d.txt"%k)
+"""
 
 """
 for k in range(20):
@@ -236,9 +269,10 @@ for k in range(20):
  samples+=load_maps("artnov/run%d/generation500/pop_behaviorlist"%k)
 """
 
-basedir="test2"
+basedir="novtest"
 set_base(basedir)
-sample_beetest("test.out")
+render_novelty("render",500)
+#sample_beetest("test.out",650)
 
 """
 for k in range(20):

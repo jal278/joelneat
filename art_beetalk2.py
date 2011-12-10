@@ -30,7 +30,7 @@ def grade_flowers(flower_pop,best_critics):
     art = flower_pop[ranks[k]]
 
     if(art.nectar==crit.nectar):
-     art.fitness+=ranks[k] #scores[k]
+     art.fitness+=scores[k] #ranks[k] #scores[k]
     #if(art.nectar==crit.nectar):
     # art.fitness+=k
     #else:
@@ -298,8 +298,9 @@ score_flowers=[]
 score_critic=0
 critic_cycles=1
 gen=0
+
 while(True):
- if(gen%20==0):
+ if(gen%30==0):
   add_new_pops(flower_pops,flower_pop_size,critic_pops,critic_pop_size) 
  print "generation:" ,gen
  print "pop length: ", len(flower_pops)
@@ -320,9 +321,6 @@ while(True):
   best_crit=critic_best[:]
  best_art.sort(key=lambda k:k.raw_fitness,reverse=True)
  
- #health = sum([k.nectar for k in best_art[:10]])
- #print health
-
  if(render):
   background.fill((255, 255, 255))
   #note: use raw fitness for speciated pop
@@ -338,6 +336,7 @@ while(True):
  if((gen)%50==0):
   directory="%s/generation%d"%(direc,gen)
   os.system("mkdir %s" % directory)
+
   for k in range(len(best_crit)):
    cfname = directory+"/crit%d" %k 
    print "cn:",best_crit[k].nectar
@@ -345,8 +344,9 @@ while(True):
 
   for k in range(len(best_art)):
    afname = directory+"/art%d" %k 
-   print "an:",flower_best[k].nectar
+   print "an:",flower_best[k].nectar,flower_best[k].raw_fitness
    flower_best[k].save(afname)
+
  if(gen==1500):
   break
  #log_file.write("%f|%d|%d|%d|%d\n" % (gen,score_nec,score_nonec,score_critic,last_migration))

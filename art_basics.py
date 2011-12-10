@@ -43,9 +43,9 @@ class Speciator:
     ind.fitness/=spec_size
   
   if len(self.species)<self.target:
-   self.threshold*=0.9
+   self.threshold*=0.95
   elif len(self.species)>self.target:
-   self.threshold*=1.1
+   self.threshold*=1.05
   
   #print "species: ", len(self.species)
 

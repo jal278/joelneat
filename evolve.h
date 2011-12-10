@@ -11,7 +11,6 @@ using namespace std;
 #include "display_cppn.h"
 #include "tinyxml/tinyxml.h"
 
-
 #ifdef SMALL
 #define SX 16
 #define SY 16
@@ -48,9 +47,9 @@ public:
  double buffers[PICNUM][SX*SY];
 
  void clear_all() {
- for(int j=0;j<PICNUM;j++)
-  for(int i=0;i<SX*SY;i++)
-	buffers[j][i]=0.0;
+  for(int j=0;j<PICNUM;j++)
+   for(int i=0;i<SX*SY;i++)
+    buffers[j][i]=0.0;
  }
 
  void clear_picture() {
@@ -447,4 +446,3 @@ static double wavelet(artist*a) {
 };
 
 #endif 
-

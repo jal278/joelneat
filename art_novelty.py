@@ -10,7 +10,7 @@ import hyperneat
 import random
 from art_basics import *
 
-render=True
+render=False
 
 screen,background=None,None
 
@@ -50,10 +50,13 @@ hyperneat.artist.random_seed()
 if(len(sys.argv)>2):
  print "seeding..."
  hyperneat.artist.seed(int(sys.argv[2]))
+random=False
+if(len(sys.argv)>3):
+ random=True 
 
 art_pop = []
 nov_crit = novelty_mapper()
-pop_size = 50
+pop_size = 250
 speciator = Speciator(5.0,8)
 
 for k in range(pop_size):
@@ -99,6 +102,9 @@ while(True):
    art.dists.sort()
    art.fitness = sum(art.dists[:20])   
    art.raw_fitness = art.fitness
+  if random:
+   art.fitness = random.random()*100.0
+   art.raw_fitness=art.fitness
  
  #adjust archive threshold
  print "Archive size: ", len(archive), " threshold: ", archive_threshold 
@@ -123,14 +129,16 @@ while(True):
   screen.blit(background,(0,0))
   pygame.display.flip()
 
- #if((gen)%50==0):
- if((gen)==500):
+ if((gen)%50==0):
+  #if((gen)==1000):
   directory="%s/generation%d"%(dname,gen)
   os.system("mkdir %s" % directory)
   afname = directory+"/art%d"
-  save_pop(art_pop,afname)
-  save_pop(archive,directory+"/archive%d")
+  if(gen%500==0):
+   save_pop(art_pop,afname)
+   save_pop(archive,directory+"/archive%d")
   save_pop_behaviors(archive,directory+"/arc_behaviorlist" )
   save_pop_behaviors(art_pop,directory+"/pop_behaviorlist" )
-  break 
+  if(gen==1000):
+   break
  art_pop = create_new_pop_gen(art_pop,0.3)
