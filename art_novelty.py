@@ -10,7 +10,7 @@ import hyperneat
 import random
 from art_basics import *
 
-render=False
+render=True
 
 screen,background=None,None
 
@@ -50,9 +50,10 @@ hyperneat.artist.random_seed()
 if(len(sys.argv)>2):
  print "seeding..."
  hyperneat.artist.seed(int(sys.argv[2]))
-random=False
+randfit=False
 if(len(sys.argv)>3):
- random=True 
+ print "random"
+ randfit=True 
 
 art_pop = []
 nov_crit = novelty_mapper()
@@ -102,7 +103,7 @@ while(True):
    art.dists.sort()
    art.fitness = sum(art.dists[:20])   
    art.raw_fitness = art.fitness
-  if random:
+  if randfit:
    art.fitness = random.random()*100.0
    art.raw_fitness=art.fitness
  

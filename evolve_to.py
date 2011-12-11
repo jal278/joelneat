@@ -1,8 +1,5 @@
 import hyperneat
 from art_basics import *
-from histogram import histogram,load_hist
-hist = load_hist()
-
 
 class target_critic():
  def __init__(self,targets,dist):
@@ -19,9 +16,9 @@ class target_critic():
    ivec.append(features[k])
    tvec.append(self.targets[k]) 
    sqd.append((features[k]-self.targets[k])**2)
-  print ivec
-  print tvec
-  print sqd
+  #print ivec
+  #print tvec
+  #print sqd
  def evaluate_artist(self,img):
   features = self.mapper.evaluate_artist(img)
   success=True
@@ -44,7 +41,7 @@ def neatclimb(trials,critic,target,popsize):
  evals=0
  max_fit=-1000
  gen=0
- speciator = Speciator(20.0,10)
+ speciator = Speciator(20.0,5)
  while(evals<trials and max_fit<0):
   best=None
   max_fit=-10000
@@ -55,12 +52,13 @@ def neatclimb(trials,critic,target,popsize):
    if(k.fitness>max_fit):
     max_fit=k.fitness
     best=k
-  print gen, max_fit,len(speciator.species)
+  #print gen, max_fit,len(speciator.species)
   critic.compare_vec(best)
   speciator.speciate(population)
   evals+=popsize
   population = create_new_pop_gen(population,0.3)
   gen+=1
+ return evals
 
 def hillclimb(trials,critic,target):
  starter = hyperneat.artist()
@@ -80,6 +78,6 @@ def hillclimb(trials,critic,target):
  print trial
  return trial,fitness
 
-crit = target_critic({0:0.7579,1:0.9345,6:0.3549},0.05)
-#hillclimb(10000,crit,0)
-neatclimb(10000,crit,0,200)
+def evolve_to(feature):
+ crit = target_critic(feature,0.05)
+ return neatclimb(10000,crit,0,100)

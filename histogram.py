@@ -83,8 +83,24 @@ def load_hist():
  hists = pickle.load(a)
  return hists
 
+def observe(k,hists):
+  best_feature=[]
+  best_prob=1.0
+  for h in hists:
+    if (len(h)>3):
+     continue
+    new=hists[h].get_freq(k)
+    if(new<best_prob):
+     best_prob = new
+     best_feature = h
+  if(best_prob==0.0):
+   best_prob=10**-8
+  feature=dict()
+  for z in best_feature:
+   feature[z]=k[z]
+  return best_prob,feature
+
 if(__name__=='__main__'):
- a=open("db.out","rb")
  hists = load_hist() # pickle.load(a)
 
  fn="arc_behaviorlist"
@@ -96,27 +112,6 @@ if(__name__=='__main__'):
  y=[]
 
  for k in archive:
-  best_feature=[]
-  best_prob=1.0
-  for h in hists:
-    if (len(h)>3): 
-     continue
-    new=hists[h].get_freq(k)
-    if(new<best_prob):
-     best_prob = new
-     best_feature = h
-  print best_prob,best_feature
-  print k
-  if(best_prob==0.0):
-   best_prob=10**-8
-  y.append(math.log(best_prob))
- print sum(y)/len(y)
+  prob,feature=observe(k,hists)
+  print prob,feature 
 
-"""
-from pylab import *
-plot (x,y,'r+')
-show()
-from scipy import linspace, polyval, polyfit, sqrt, stats, randn
-(a_s,b_s,r,tt,stderr)=stats.linregress(x,y)
-print a_s,b_s,r,tt
-"""
