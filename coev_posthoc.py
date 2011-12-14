@@ -269,9 +269,13 @@ for k in range(20):
  samples+=load_maps("artnov/run%d/generation500/pop_behaviorlist"%k)
 """
 
-basedir="novtest"
-set_base(basedir)
-render_novelty("render",500)
+for k in range(15,1,-1):
+ print k
+ basedir="res/artnov/run%d" % k
+ set_base(basedir)
+ outdir="render/nov%d/"%k
+ os.system("mkdir %s" % outdir)
+ render_novelty(outdir,500)
 #sample_beetest("test.out",650)
 
 """
