@@ -1,4 +1,5 @@
 numeric=False
+
 if(numeric):
  import Numeric as numpy
 else:
@@ -8,6 +9,7 @@ import os
 import sys
 import hyperneat
 import random
+import evolve_to
 from art_basics import *
 
 render=True
@@ -50,11 +52,19 @@ hyperneat.artist.random_seed()
 if(len(sys.argv)>2):
  print "seeding..."
  hyperneat.artist.seed(int(sys.argv[2]))
+
+target_critic=None
 randfit=False
-if(len(sys.argv)>3):
+targetfit=False
+if(len(sys.argv)>3 and sys.argv[3]=="rand"):
  print "random"
  randfit=True 
-
+else:
+ print "target"
+ target_fn = sys.argv[3]
+ target=pickle.load(open(target_fn,"rb"))
+ target_critic=evolve_to.target_critic(target[1],0.05)
+ targetfit=True
 art_pop = []
 nov_crit = novelty_mapper()
 pop_size = 250
@@ -106,7 +116,9 @@ while(True):
   if randfit:
    art.fitness = random.random()*100.0
    art.raw_fitness=art.fitness
- 
+  if targetfit: 
+   art.fitness = target_critic.evaluate_artist(art)
+   art.raw_fitness = art.fitness
  #adjust archive threshold
  print "Archive size: ", len(archive), " threshold: ", archive_threshold 
  if(archive_add_count>4):

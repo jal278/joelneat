@@ -1,6 +1,12 @@
 import evolve_to
 import pickle
 import sys
+import hyperneat
+
+if(len(sys.argv)>3):
+ print "seeding..."
+ hyperneat.artist.seed(int(sys.argv[3]))
+
 a=open("samples.dat","r")
 samples =pickle.load(a)
 
