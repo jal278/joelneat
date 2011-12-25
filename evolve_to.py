@@ -1,7 +1,7 @@
 import hyperneat
 from art_basics import *
 
-class target_critic():
+class target_critic:
  def __init__(self,targets,dist):
   self.dist=dist
   self.sq_d=self.dist**2

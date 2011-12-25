@@ -10,8 +10,8 @@ def load_maps(fname):
 
 #fn_temp = "res/artrand/run%d/generation%d/arc_behaviorlist"
 #ofn_temp = "res/artrand/run%d/generation%d/arc_raritylist"
-fn_temp = "res/artnov/run%d/generation%d/arc_behaviorlist"
-ofn_temp = "res/artnov/run%d/generation%d/arc_raritylist"
+fn_temp = "res/artfit/run%d/generation%d/pop_behaviorlist"
+ofn_temp = "res/artfit/run%d/generation%d/pop_raritylist"
 hist = load_hist()
 
 import random
