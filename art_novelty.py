@@ -60,7 +60,7 @@ if(len(sys.argv)>3):
  if (sys.argv[3]=="rand"):
   print "random"
   randfit=True 
- else:
+ elif(len(sys.argv)>3):
   print "target"
   target_fn = sys.argv[3]
   target=pickle.load(open(target_fn,"rb"))
