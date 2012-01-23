@@ -94,6 +94,14 @@ class feature_detector(_object):
     if _newclass:symmetry_x = staticmethod(_hyperneat.feature_detector_symmetry_x)
     __swig_getmethods__["symmetry_y"] = lambda x: _hyperneat.feature_detector_symmetry_y
     if _newclass:symmetry_y = staticmethod(_hyperneat.feature_detector_symmetry_y)
+    __swig_getmethods__["maze_path_length"] = lambda x: _hyperneat.feature_detector_maze_path_length
+    if _newclass:maze_path_length = staticmethod(_hyperneat.feature_detector_maze_path_length)
+    __swig_getmethods__["gmaze_path_length"] = lambda x: _hyperneat.feature_detector_gmaze_path_length
+    if _newclass:gmaze_path_length = staticmethod(_hyperneat.feature_detector_gmaze_path_length)
+    __swig_getmethods__["maze_path_nodes"] = lambda x: _hyperneat.feature_detector_maze_path_nodes
+    if _newclass:maze_path_nodes = staticmethod(_hyperneat.feature_detector_maze_path_nodes)
+    __swig_getmethods__["gmaze_path_nodes"] = lambda x: _hyperneat.feature_detector_gmaze_path_nodes
+    if _newclass:gmaze_path_nodes = staticmethod(_hyperneat.feature_detector_gmaze_path_nodes)
     def __init__(self): 
         this = _hyperneat.new_feature_detector()
         try: self.this.append(this)
@@ -139,6 +147,22 @@ def feature_detector_symmetry_y(*args):
   return _hyperneat.feature_detector_symmetry_y(*args)
 feature_detector_symmetry_y = _hyperneat.feature_detector_symmetry_y
 
+def feature_detector_maze_path_length(*args):
+  return _hyperneat.feature_detector_maze_path_length(*args)
+feature_detector_maze_path_length = _hyperneat.feature_detector_maze_path_length
+
+def feature_detector_gmaze_path_length(*args):
+  return _hyperneat.feature_detector_gmaze_path_length(*args)
+feature_detector_gmaze_path_length = _hyperneat.feature_detector_gmaze_path_length
+
+def feature_detector_maze_path_nodes(*args):
+  return _hyperneat.feature_detector_maze_path_nodes(*args)
+feature_detector_maze_path_nodes = _hyperneat.feature_detector_maze_path_nodes
+
+def feature_detector_gmaze_path_nodes(*args):
+  return _hyperneat.feature_detector_gmaze_path_nodes(*args)
+feature_detector_gmaze_path_nodes = _hyperneat.feature_detector_gmaze_path_nodes
+
 class artist(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, artist, name, value)
@@ -147,6 +171,7 @@ class artist(_object):
     __repr__ = _swig_repr
     def distance(self, *args): return _hyperneat.artist_distance(self, *args)
     def get_nanflag(self): return _hyperneat.artist_get_nanflag(self)
+    def get_valid(self): return _hyperneat.artist_get_valid(self)
     def clear_picture(self): return _hyperneat.artist_clear_picture(self)
     def clear_all(self): return _hyperneat.artist_clear_all(self)
     def save(self, *args): return _hyperneat.artist_save(self, *args)
@@ -179,6 +204,8 @@ class artist(_object):
     def get_big(self): return _hyperneat.artist_get_big(self)
     def get_picture(self): return _hyperneat.artist_get_picture(self)
     def get_picture_num(self, *args): return _hyperneat.artist_get_picture_num(self, *args)
+    def get_maze_path_length(self): return _hyperneat.artist_get_maze_path_length(self)
+    def get_maze_nodes(self): return _hyperneat.artist_get_maze_nodes(self)
 artist_swigregister = _hyperneat.artist_swigregister
 artist_swigregister(artist)
 

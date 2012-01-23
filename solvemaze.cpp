@@ -204,7 +204,8 @@ return 0;
 }
 */
 
-vector<float> solve_maze(int* m,int width,int height,int& steps,vector<int>* path)
+//vector<float>
+void solve_maze(double* m,int width,int height,int& steps,vector<int>* path)
 {
  vector<int> path2;
  if(path==NULL) path=&path2;
@@ -213,7 +214,6 @@ vector<float> solve_maze(int* m,int width,int height,int& steps,vector<int>* pat
  MAP_HEIGHT=height;
  map=m;
  AStarSearch<MapSearchNode> astarsearch;
-
 
 		// Create a start state
 		MapSearchNode nodeStart;
@@ -350,5 +350,5 @@ if(false) {
  }
 }
 
-	return d;
+	return; // d;
 }

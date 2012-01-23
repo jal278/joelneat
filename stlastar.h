@@ -22,8 +22,8 @@ given where due.
   Use at your own risk!
 
 */
-#define GREEDY 1
-
+//#define GREEDY 1
+extern bool stlgreedy;
 // used for text debugging
 #include <iostream>
 #include <stdio.h>
@@ -39,6 +39,7 @@ using namespace std;
 #define MAXSTEPS 2000
 // fast fixed size memory allocator, used for fast node memory management
 #include "fsa.h"
+void set_greedy(bool g);
 
 // Fixed size memory allocator can be disabled to compare performance
 // Uses std new and delete instead if you turn it off
@@ -105,11 +106,10 @@ public: // data
 
 			bool operator() ( const Node *x, const Node *y ) const
 			{
-				#ifdef GREEDY
-                                 return x->h > y->h;  //bfs
-                                #else 
+                                if(stlgreedy)
+				return x->h > y->h;  //bfs
+				else 
  				return x->f > y->f;  //astar
-			        #endif
                         }
 	};
 
@@ -298,10 +298,13 @@ public: // methods
 				if( openlist_result != m_OpenList.end() )
 				{
 					// we found this state on open
-                                        #ifdef GREEDY
+                                        //#ifdef GREEDY
+					if(stlgreedy) {
 				          FreeNode( (*successor) );
                                           continue;
-					#else 
+					}
+					else {
+					//#else 
 					if( (*openlist_result)->g <= newg )
 					{
 						FreeNode( (*successor) );
@@ -309,7 +312,7 @@ public: // methods
 						// the one on Open is cheaper than this one
 						continue;
 					}
-                                        #endif
+                                        }
 				}
 
 				typename vector< Node * >::iterator closedlist_result;
@@ -326,12 +329,13 @@ public: // methods
 				{
 
 					// we found this state on closed
-                                        #ifdef GREEDY
-
+                                        //#ifdef GREEDY
+					if(stlgreedy) {
 						FreeNode( (*successor) );
 
 						continue;
-					#else
+					}
+					else {
                                         if( (*closedlist_result)->g <= newg )
 					{
 						// the one on Closed is cheaper than this one
@@ -339,7 +343,7 @@ public: // methods
 
 						continue;
 					}
-                                        #endif
+                                        }
 				}
 
 				// This node is the best node so far with this particular state
@@ -768,4 +772,3 @@ private: // data
 
 
 
-   

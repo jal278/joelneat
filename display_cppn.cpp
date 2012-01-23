@@ -45,6 +45,21 @@ val+=randfloat()*0.2-0.1;
 
 }
 
+int threshold_buffer(double * buf,int sx, int sy)
+{
+ int offset=0;
+ for(int x=0;x<sx*sy;x++)
+  {
+    if(*buf > 0.5) {
+      *buf = 1.0;
+    }
+    else { 
+      *buf = 0.0;
+    }
+    buf++;
+  }
+}
+
 int gen_buffer(double* buf, CPPN* c,int sx, int sy)
 {
  int offset=0;

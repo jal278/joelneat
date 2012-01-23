@@ -99,6 +99,16 @@ class novelty_mapper:
   #return map(lambda k:k(a),self.features)
   return self.critic.map_all(a)
 
+class maze_novelty_mapper:
+ def __init__(self):
+  self.critic = feature_critic()
+  self.critic.clear()
+  self.critic.names=["length","nodes","avg"]
+  self.critic.features=[hyperneat.feature_detector.maze_path_length,hyperneat.feature_detector.maze_path_nodes,hyperneat.feature_detector.average] #,hyperneat.feature_detector.gmaze_path_length,hyperneat.feature_detector.gmaze_path_nodes,hyperneat.feature_detector.compression,hyperneat.feature_detector.chop]
+ def evaluate_artist(self,a):
+  #return map(lambda k:k(a),self.features)
+  return self.critic.map_all(a)
+
 class feature_critic:  
  def __str__(self):
    string=""
@@ -129,6 +139,10 @@ class feature_critic:
    self.weights=[]
    self.targets=[]
    self.add_feature()
+ def clear(self):
+   self.active=[]
+   self.weights=[]
+   self.targets=[]
  def add_feature(self):
    tries=5
    feature=None

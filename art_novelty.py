@@ -56,17 +56,25 @@ if(len(sys.argv)>2):
 target_critic=None
 randfit=False
 targetfit=False
-if(len(sys.argv)>3 and sys.argv[3]=="rand"):
- print "random"
- randfit=True 
-else:
- print "target"
- target_fn = sys.argv[3]
- target=pickle.load(open(target_fn,"rb"))
- target_critic=evolve_to.target_critic(target[1],0.05)
- targetfit=True
+if(len(sys.argv)>3):
+ if (sys.argv[3]=="rand"):
+  print "random"
+  randfit=True 
+ else:
+  print "target"
+  target_fn = sys.argv[3]
+  target=pickle.load(open(target_fn,"rb"))
+  target_critic=evolve_to.target_critic(target[1],0.05)
+  targetfit=True
+
 art_pop = []
+
+maze=True
+
 nov_crit = novelty_mapper()
+if(maze):
+ nov_crit = maze_novelty_mapper()
+
 pop_size = 250
 speciator = Speciator(5.0,8)
 
@@ -98,7 +106,7 @@ while(True):
  print "calculating fitness"
  #now to calculate fitnesses for artists and critics
  for art in art_pop:
-  if(art.get_nanflag()):
+  if(art.get_nanflag() or not art.get_valid()):
    art.fitness = -100.0
    art.clear_picture()
   else:
@@ -152,6 +160,6 @@ while(True):
    save_pop(archive,directory+"/archive%d")
   save_pop_behaviors(archive,directory+"/arc_behaviorlist" )
   save_pop_behaviors(art_pop,directory+"/pop_behaviorlist" )
-  if(gen==1000):
+  if(gen==1500):
    break
  art_pop = create_new_pop_gen(art_pop,0.3)

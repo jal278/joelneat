@@ -3360,6 +3360,94 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_feature_detector_maze_path_length(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:feature_detector_maze_path_length",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "feature_detector_maze_path_length" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (double)feature_detector::maze_path_length(arg1);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_feature_detector_gmaze_path_length(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:feature_detector_gmaze_path_length",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "feature_detector_gmaze_path_length" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (double)feature_detector::gmaze_path_length(arg1);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_feature_detector_maze_path_nodes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:feature_detector_maze_path_nodes",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "feature_detector_maze_path_nodes" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (double)feature_detector::maze_path_nodes(arg1);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_feature_detector_gmaze_path_nodes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:feature_detector_gmaze_path_nodes",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "feature_detector_gmaze_path_nodes" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (double)feature_detector::gmaze_path_nodes(arg1);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_feature_detector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   feature_detector *result = 0 ;
@@ -3447,6 +3535,28 @@ SWIGINTERN PyObject *_wrap_artist_get_nanflag(PyObject *SWIGUNUSEDPARM(self), Py
   }
   arg1 = reinterpret_cast< artist * >(argp1);
   result = (bool)(arg1)->get_nanflag();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_artist_get_valid(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:artist_get_valid",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "artist_get_valid" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (bool)(arg1)->get_valid();
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -4002,6 +4112,50 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_artist_get_maze_path_length(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:artist_get_maze_path_length",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "artist_get_maze_path_length" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (int)(arg1)->get_maze_path_length();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_artist_get_maze_nodes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  artist *arg1 = (artist *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:artist_get_maze_nodes",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_artist, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "artist_get_maze_nodes" "', argument " "1"" of type '" "artist *""'"); 
+  }
+  arg1 = reinterpret_cast< artist * >(argp1);
+  result = (int)(arg1)->get_maze_nodes();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *artist_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
@@ -4300,11 +4454,16 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"feature_detector_wavelet", _wrap_feature_detector_wavelet, METH_VARARGS, NULL},
 	 { (char *)"feature_detector_symmetry_x", _wrap_feature_detector_symmetry_x, METH_VARARGS, NULL},
 	 { (char *)"feature_detector_symmetry_y", _wrap_feature_detector_symmetry_y, METH_VARARGS, NULL},
+	 { (char *)"feature_detector_maze_path_length", _wrap_feature_detector_maze_path_length, METH_VARARGS, NULL},
+	 { (char *)"feature_detector_gmaze_path_length", _wrap_feature_detector_gmaze_path_length, METH_VARARGS, NULL},
+	 { (char *)"feature_detector_maze_path_nodes", _wrap_feature_detector_maze_path_nodes, METH_VARARGS, NULL},
+	 { (char *)"feature_detector_gmaze_path_nodes", _wrap_feature_detector_gmaze_path_nodes, METH_VARARGS, NULL},
 	 { (char *)"new_feature_detector", _wrap_new_feature_detector, METH_VARARGS, NULL},
 	 { (char *)"delete_feature_detector", _wrap_delete_feature_detector, METH_VARARGS, NULL},
 	 { (char *)"feature_detector_swigregister", feature_detector_swigregister, METH_VARARGS, NULL},
 	 { (char *)"artist_distance", _wrap_artist_distance, METH_VARARGS, NULL},
 	 { (char *)"artist_get_nanflag", _wrap_artist_get_nanflag, METH_VARARGS, NULL},
+	 { (char *)"artist_get_valid", _wrap_artist_get_valid, METH_VARARGS, NULL},
 	 { (char *)"artist_clear_picture", _wrap_artist_clear_picture, METH_VARARGS, NULL},
 	 { (char *)"artist_clear_all", _wrap_artist_clear_all, METH_VARARGS, NULL},
 	 { (char *)"artist_save", _wrap_artist_save, METH_VARARGS, NULL},
@@ -4329,6 +4488,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"artist_get_big", _wrap_artist_get_big, METH_VARARGS, NULL},
 	 { (char *)"artist_get_picture", _wrap_artist_get_picture, METH_VARARGS, NULL},
 	 { (char *)"artist_get_picture_num", _wrap_artist_get_picture_num, METH_VARARGS, NULL},
+	 { (char *)"artist_get_maze_path_length", _wrap_artist_get_maze_path_length, METH_VARARGS, NULL},
+	 { (char *)"artist_get_maze_nodes", _wrap_artist_get_maze_nodes, METH_VARARGS, NULL},
 	 { (char *)"artist_swigregister", artist_swigregister, METH_VARARGS, NULL},
 	 { (char *)"evaluator_get_weights", _wrap_evaluator_get_weights, METH_VARARGS, NULL},
 	 { (char *)"evaluator_distance", _wrap_evaluator_distance, METH_VARARGS, NULL},

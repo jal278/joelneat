@@ -17,12 +17,18 @@ static double compression(artist*a);
 static double wavelet(artist*a);
 static double symmetry_x(artist*a);
 static double symmetry_y(artist*a);
+
+static double maze_path_length(artist*a);
+static double gmaze_path_length(artist*a);
+static double maze_path_nodes(artist*a);
+static double gmaze_path_nodes(artist*a);
 };
 
 class artist {
  public:
   double distance(artist*a);
   bool get_nanflag();
+  bool get_valid();
   void clear_picture();
   void clear_all(); 
   void save(const char*fn);
@@ -47,6 +53,9 @@ class artist {
   PyObject* get_big();
   PyObject* get_picture();
   PyObject *get_picture_num(int i);
+ 
+ int get_maze_path_length() { return maze_path_length; }
+ int get_maze_nodes() { return maze_ndoes; }
 };
 
 class evaluator {

@@ -10,6 +10,10 @@ using namespace std;
 #include "hneat.h"
 #include "display_cppn.h"
 #include "tinyxml/tinyxml.h"
+#include "stlastar.h"
+#include "solvemaze.h"
+
+#define MAZE_EVOLUTION 1
 
 #ifdef SMALL
 #define SX 16
@@ -39,6 +43,14 @@ void initialize();
 
 class artist {
 public:
+ int maze_path_length;
+ int maze_nodes;
+ int gmaze_path_length;
+ int gmaze_nodes;
+ int get_maze_path_length() { return maze_path_length; }
+ int get_maze_nodes() { return maze_nodes; }
+
+ bool valid;
  bool rendered;
  bool isrendered() { return rendered; }
  double buffer[SX*SY];
@@ -99,7 +111,9 @@ public:
 
  CPPN* orig;
  Substrate *s,*t;
+ bool get_valid() { return valid; }
  artist() {
+	valid=true;
         rendered=false;
         vector<int> r1;
 	vector<int> r2;
@@ -182,6 +196,28 @@ public:
  double* render_picture() {
   rendered=true;
   gen_buffer(buffer,orig,SX,SY);
+
+  #ifdef MAZE_EVOLUTION
+  threshold_buffer(buffer,SX,SY);
+  vector<int> path;
+  int steps;
+
+  set_greedy(false);
+  solve_maze(buffer,SX,SY,steps,&path); 
+  maze_path_length = path.size()/2;
+  maze_nodes = steps;
+
+  set_greedy(true); 
+  path.clear();
+  solve_maze(buffer,SX,SY,steps,&path); 
+  gmaze_path_length = path.size()/2;
+  gmaze_nodes = steps;
+
+  if(steps==0) { valid=false; }
+  for(int x=0;x<path.size();x+=2)
+   buffer[path[x+1]*SX+path[x]]=0.5;
+  #endif
+
   return buffer; 
  }
 
@@ -441,6 +477,31 @@ static double wavelet(artist*a) {
        free (abscoeff);
        free (p);
     return compression;
+}
+
+
+static double gmaze_path_length(artist*a) {
+ double val =  (a->gmaze_path_length-64) / (64.0*20.0);
+ if(val>1.0) return 1.0;
+ return val; 
+}
+
+static double gmaze_path_nodes(artist*a) {
+ double val =  (a->gmaze_nodes) / (64.0*16.0);
+ if(val>1.0) return 1.0;
+ return val;
+}
+
+static double maze_path_length(artist*a) {
+ double val =  (a->maze_path_length-64) / (64.0*20.0);
+ if(val>1.0) return 1.0;
+ return val; 
+}
+
+static double maze_path_nodes(artist*a) {
+ double val =  (a->maze_nodes) / (64.0*20.0);
+ if(val>1.0) return 1.0;
+ return val;
 }
 
 };
