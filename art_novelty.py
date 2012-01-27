@@ -69,7 +69,7 @@ if(len(sys.argv)>3):
 
 art_pop = []
 
-maze=True
+maze=False
 
 nov_crit = novelty_mapper()
 if(maze):

@@ -80,4 +80,4 @@ def hillclimb(trials,critic,target):
 
 def evolve_to(feature):
  crit = target_critic(feature,0.05)
- return neatclimb(10000,crit,0,100)
+ return neatclimb(25000,crit,0,100)

@@ -73,7 +73,7 @@ def make_db():
 
  samples=[]
  for k in range(40):
-  samples+=load_maps("samples%d.txt"%k)
+  samples+=load_maps("samples/samples%d.txt"%k)
  histograms=dict()
  for k in feature_set:
   print k,len(samples)
@@ -119,6 +119,7 @@ def observe_(k,hists,sz):
   return best_prob,feature
 
 if(__name__=='__main__'):
+ make_db()
  hists = load_hist() # pickle.load(a)
 
  fn="arc_behaviorlist"

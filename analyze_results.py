@@ -10,17 +10,17 @@ def load_maps(fname):
 
 #fn_temp = "res/artrand/run%d/generation%d/arc_behaviorlist"
 #ofn_temp = "res/artrand/run%d/generation%d/arc_raritylist"
-fn_temp = "res/artfit/run%d/generation%d/pop_behaviorlist"
-ofn_temp = "res/artfit/run%d/generation%d/pop_raritylist"
+fn_temp = "res/artrand/run%d/generation%d/pop_behaviorlist"
+ofn_temp = "res/artrand/run%d/generation%d/pop_raritylist"
 hist = load_hist()
 
 import random
 sample_dict=dict()
 
-for g in range(100,750,50):
+for g in range(0,800,50):
  avg=[]
  sample_dict[g]=[]
- for r in range(15):
+ for r in range(40):
   ofn=open(ofn_temp%(r,g),"w")
   fn=fn_temp%(r,g)
   #print fn
@@ -37,12 +37,12 @@ for g in range(100,750,50):
 
 samples=dict()
 sample_size=200
-for g in range(100,600,100):
+for g in range(0,800,50):
  #samples[g]=[]
  #for k in range(sample_size):
  # samples[g].append(random.choice(sample_dict[g]))
  samples[g]=random.sample(sample_dict[g],sample_size)
 import pickle
-a=open("samples.dat","w")
+a=open("randsamples.dat","w")
 pickle.dump(samples,a)
 
