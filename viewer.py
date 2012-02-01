@@ -118,10 +118,12 @@ def observe_(k,hists,sz):
    feature[z]=k[z]
   return best_prob,feature
 
+#hists=load_hist()
 if(__name__=='__main__'):
- make_db()
+ #make_db()
  hists = load_hist() # pickle.load(a)
 
+ """
  fn="arc_behaviorlist"
  if(len(sys.argv)>1):
   fn=sys.argv[1]
@@ -133,4 +135,4 @@ if(__name__=='__main__'):
  for k in archive:
   prob,feature=observe(k,hists)
   print prob,feature 
-
+ """

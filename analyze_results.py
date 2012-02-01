@@ -8,10 +8,10 @@ def load_maps(fname):
  lines=open(fname).read().split("\n")[:-1]
  return [[float(l) for l in k.split()] for k in lines]
 
-#fn_temp = "res/artrand/run%d/generation%d/arc_behaviorlist"
-#ofn_temp = "res/artrand/run%d/generation%d/arc_raritylist"
-fn_temp = "res/artrand/run%d/generation%d/pop_behaviorlist"
-ofn_temp = "res/artrand/run%d/generation%d/pop_raritylist"
+fn_temp = "res/artnov/run%d/generation%d/arc_behaviorlist"
+ofn_temp = "res/artnov/run%d/generation%d/arc_raritylist"
+#fn_temp = "res/artfit/run%d/generation%d/pop_behaviorlist"
+#ofn_temp = "res/artfit/run%d/generation%d/pop_raritylist"
 hist = load_hist()
 
 import random
@@ -43,6 +43,6 @@ for g in range(0,800,50):
  # samples[g].append(random.choice(sample_dict[g]))
  samples[g]=random.sample(sample_dict[g],sample_size)
 import pickle
-a=open("randsamples.dat","w")
-pickle.dump(samples,a)
+#a=open("fitsamples.dat","w")
+#pickle.dump(samples,a)
 

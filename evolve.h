@@ -13,7 +13,7 @@ using namespace std;
 #include "stlastar.h"
 #include "solvemaze.h"
 
-#define MAZE_EVOLUTION 1
+//#define MAZE_EVOLUTION 1
 
 #ifdef SMALL
 #define SX 16
@@ -25,8 +25,8 @@ using namespace std;
 
 #define PICNUM 1
 
-#define LARGESX 256
-#define LARGESY 256
+#define LARGESX 512
+#define LARGESY 512
 #include <bzlib.h>
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_sort.h>
