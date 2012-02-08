@@ -96,7 +96,7 @@ def observe(k,hists):
  best,bfeature=observe_(k,hists,1)
  for z in range(2,4):
   new,nfeature = observe_(k,hists,z)
-  if new>(best*(0.05/10)):
+  if new>(best*(0.05/10)): #was 10
    break
   else:
    best,bfeature=new,nfeature

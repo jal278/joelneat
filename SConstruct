@@ -9,7 +9,7 @@ tinyxml=glob.glob('tinyxml/*.cpp')
 allsrc=current+tinyxml
 
 evolve=allsrc[:]
-env=Environment(CPPFLAGS='-O3 -I /usr/include/python2.6/ -I /usr/lib/python2.6')
+env=Environment(CPPFLAGS='-O3 -I /usr/include/python2.7/ -I /usr/lib/python2.6')
 #env=Environment(CPPFLAGS='-g -I /usr/include/python2.6/ -I /usr/lib/python2.6')
 #env.Program(source=evolve)
 evolve+=glob.glob('*.cxx')

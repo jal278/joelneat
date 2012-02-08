@@ -62,8 +62,9 @@ if(len(sys.argv)>3):
   randfit=True 
  elif(len(sys.argv)>3):
   print "target"
-  target_fn = sys.argv[3]
-  target=pickle.load(open(target_fn,"rb"))
+  #target_fn = sys.argv[3]
+  #target=pickle.load(open(target_fn,"rb"))
+  target=[0,{3:1.0}]
   target_critic=evolve_to.target_critic(target[1],0.05)
   targetfit=True
 
@@ -102,7 +103,8 @@ while(True):
   art.fitness=0.0
   art.ranks=[]
   art.behavior=numpy.array(nov_crit.evaluate_artist(art))
- 
+  if(art.get_nanflag() or not art.get_valid()):
+	  art.behavior[:]=0.0
  print "calculating fitness"
  #now to calculate fitnesses for artists and critics
  for art in art_pop:
@@ -142,7 +144,7 @@ while(True):
 
  speciator.speciate(art_pop)
  art_pop.sort(key=lambda k:k.raw_fitness,reverse=True)
- 
+ print "maxf:", art_pop[0].raw_fitness 
  if(render):
   gs=4
   for k in range(16):

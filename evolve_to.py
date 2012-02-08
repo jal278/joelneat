@@ -24,6 +24,7 @@ class target_critic:
   success=True
   error=0
   for k in self.targets:   
+   #print features[k],self.targets[k]
    sq_d = (features[k]-self.targets[k])**2
    if(sq_d>self.sq_d):
     success=False
