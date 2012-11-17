@@ -34,12 +34,100 @@ using namespace std;
 #include <gsl/gsl_wavelet2d.h>
 
 class evaluator;
+class mazenav;
 extern double bigbuff[LARGESX*LARGESY];
 extern double coordarray[10][SX*SY*4];
 
 PyObject *to_array(double* buffer,int , int );
 void init_coordarray();
 void initialize(); 
+
+class mazenav {
+ public:
+ static void seed(int sd) {
+  srand ( sd );
+ }
+ static void random_seed() {
+  srand ( time(NULL) );
+ }
+ double distance(mazenav* other) {
+  return orig->distance((individual*)other->orig); 
+ }
+
+ int complexity() {
+  return orig->complexity();
+ }
+ const char* save_xml() {
+  return orig->save_xml();
+ }
+
+ static mazenav* load_xml(const char* xml_string) {
+  mazenav* newart=new mazenav();
+  delete newart->orig;
+  newart->orig= CPPN::load_xml(xml_string);
+  return newart;
+ }
+
+ static mazenav* load(const char *fname) {
+  mazenav* k = new mazenav(CPPN::load(fname));
+  return k;
+ }
+ 
+ void save(const char *fname) {
+  orig->save(fname);
+ }
+
+ void load_new(const char *fname) {
+  delete orig;
+  orig = CPPN::load(fname);
+ }
+
+ CPPN* orig;
+ Substrate *s,*t;
+ mazenav() {
+        vector<int> r1;
+	vector<int> r2;
+	r1.push_back(1);
+	r1.push_back(1);
+	r1.push_back(1);
+        s = new Substrate(r1,true,false,false,0);
+	t = new Substrate(r2,false,true,false,1);
+        orig= new CPPN(s,t,10,false);
+        orig->change();
+ }
+ mazenav(CPPN* cppn) {
+  orig=cppn;
+ }
+
+ mazenav* copy() {
+  mazenav* new_art= new mazenav();
+  delete new_art->orig;
+  vector<Substrate*> sv;
+  sv.push_back(new_art->s);
+  sv.push_back(new_art->t);
+  new_art->orig=(CPPN*)this->orig->Copy(sv);
+  return new_art;
+ }
+
+ void mutate() {
+  orig->mutate(); 
+ }
+ void make_random() {
+  orig->make_random();
+ }
+
+ void change() {
+  orig->change();
+ }
+
+
+ ~mazenav() {
+  delete orig;
+  delete s;
+  delete t;
+ } 
+
+};
 
 class artist {
 public:
@@ -53,6 +141,9 @@ public:
  bool valid;
  bool rendered;
  bool isrendered() { return rendered; }
+ bool get_nanflag() {
+  return orig->nanflag;
+ }
  double buffer[SX*SY];
 
  //for multiple noisy pictures
@@ -67,9 +158,6 @@ public:
  void clear_picture() {
   for (int i=0;i<SX*SY;i++)
    buffer[i]=0.0;
- }
- bool get_nanflag() {
-  return orig->nanflag;
  }
  static void seed(int sd) {
   srand ( sd );
@@ -111,6 +199,7 @@ public:
 
  CPPN* orig;
  Substrate *s,*t;
+ bool isvalid() { return valid && !get_nanflag(); }
  bool get_valid() { return valid; }
  artist() {
 	valid=true;
@@ -220,7 +309,9 @@ public:
 
   return buffer; 
  }
-
+ void map() {
+  render_picture();
+ }
  double* render_all() {
   rendered=true;
   for(int i=0;i<PICNUM;i++)
@@ -481,19 +572,19 @@ static double wavelet(artist*a) {
 
 
 static double gmaze_path_length(artist*a) {
- double val =  (a->gmaze_path_length-64) / (64.0*20.0);
+ double val =  (a->gmaze_path_length-64) / (64.0*5.0);
  if(val>1.0) return 1.0;
  return val; 
 }
 
 static double gmaze_path_nodes(artist*a) {
- double val =  (a->gmaze_nodes) / (64.0*16.0);
+ double val =  (a->gmaze_nodes) / (64.0*20.0);
  if(val>1.0) return 1.0;
  return val;
 }
 
 static double maze_path_length(artist*a) {
- double val =  (a->maze_path_length-64) / (64.0*20.0);
+ double val =  (a->maze_path_length-64) / (64.0*5.0);
  if(val>1.0) return 1.0;
  return val; 
 }

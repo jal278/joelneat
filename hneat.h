@@ -408,6 +408,7 @@ class CPPN:public individual
    public:
 	bool created;
 	bool trivial;
+	bool not_recurrent;
         double trivial_weight;
 
 	Substrate* in_substrate;
@@ -568,7 +569,7 @@ class CPPN:public individual
 					connections[x]->out_node==n2)
 						found=false;
 
-			if (recurrent(n1,n2))
+			if (recurrent(n1,n2) && not_recurrent)
 				found=false;
 			num_tries--;
 		}
@@ -1027,8 +1028,25 @@ class CPPN:public individual
 	doc.SaveFile();
 	}
 
+	CPPN(int inputs,int outputs, bool _not_recurrent) {
+		int temp_inno = 0;
+		not_recurrent=_not_recurrent;
+		vector<Node*> n;
+		vector<Connection*> c;
+		for(int x=0;x<inputs;x++)
+			n.push_back(new Node(true,false,false,0,temp_inno++));
+
+		//add bias
+		n.push_back(new Node(false,false,true,0,temp_inno++));
+		//add output
+		for(int x=0;x<outputs;x++)
+		n.push_back(new Node(false,true,false,0,temp_inno++));
+		init(NULL,NULL,100,n,c,0.0);
+	} 
+
 	CPPN(Substrate* source, Substrate* target,long int inno,bool minimize=false)
 	{
+		not_recurrent=true;
 		vector<Node*> n;
 		vector<Connection*> c;
 

@@ -29,7 +29,10 @@ class artist {
   double distance(artist*a);
   bool get_nanflag();
   bool get_valid();
-  void clear_picture();
+
+  bool isvalid();
+
+  void clear();
   void clear_all(); 
   void save(const char*fn);
   void load_new(const char*fn);
@@ -45,6 +48,7 @@ class artist {
   artist* copy();
   double* render_all();
   double* render_picture();
+  void map();
   bool isrendered();
   void mutate();
   void change();

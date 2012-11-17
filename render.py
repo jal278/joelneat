@@ -28,8 +28,10 @@ def render(in_fname,out_fname):
  out=out.convert("RGB")
  out.save(out_fname)
 
+"""
 for k in range(10,15):
  print "rendering ", k
  outdir = "render/nov%d/" % k
  #os.system("mkdir %s" % outdir)
  render_nov("res/artnov/run%d"%k,500,outdir)
+"""
