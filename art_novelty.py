@@ -103,7 +103,6 @@ while(True):
   art.fitness=0.0
   art.ranks=[]
   art.behavior=numpy.array(nov_crit.evaluate_artist(art))
-  print art.behavior
   if(art.get_nanflag() or not art.get_valid()):
 	  art.behavior[:]=0.0
  print "calculating fitness"

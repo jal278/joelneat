@@ -35,11 +35,15 @@ class Singleton
                         generate_luts();
 			//test_shit();
 			af.push_back(sigmoid_af_approx);
+		
+		//COMMENT OUT WHEN DOING ANN-evolvution
 			af.push_back(abs_af);
 			af.push_back(gaussian_af_approx);
 			af.push_back(sin_af_approx);
 		        af.push_back(linear_af);
-                        //af.push_back(mod_af);
+		//WHEN DOING ANN-evolution
+                	
+			        //af.push_back(mod_af);
 			cout << "In Ctor" << endl; }
         ~Singleton() { cout << "In Dtor" << endl; }
 

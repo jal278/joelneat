@@ -4,6 +4,7 @@ import numpy
 import pygame
 from pygame.locals import *
 from art_basics import *
+import ad
 
 render=True
 
@@ -21,28 +22,29 @@ if(render):
 SX=SY=64
 PXS = 2
 
-def render_picture(x,y,pxsize,data):
+def render_picture(x,y,data):
  global render,screen,background,SX,SY
  if(not render):
   return
+ data.render("image0.png")
+ im=pygame.image.load("image0.png")
+ imagerect=(x,y) #im.get_rect()
+ background.blit(im,imagerect)
+ """
  for xc in range(SX):
   for yc in range(SY):
    px=int ( (data[xc][yc])*256)
    px=min(px,255)
    px=max(px,0)
    pygame.draw.circle(background, (px,px,px), (x+xc*pxsize,y+yc*pxsize),pxsize,0)
+ """
 
 def render_artist(x,y,pxsize,artist):
  global render,screen,background,SX,SY
  if(not render):
   return
- render_picture(x,y,pxsize,artist.get_picture())
- ycoord = y+SY*pxsize+5
- xcoord = x
- xlen = int(SX*pxsize * artist.fitness)
- if (xlen<0 or xlen>SX*pxsize):
-  xlen=0
- #pygame.draw.line(background, (0,255,0), (xcoord,ycoord),(xcoord+xlen,ycoord),5) 
+ render_picture(x,y,artist)
+ 
 a=hyperneat.artist()
 a.random_seed()
 artists = []
@@ -133,11 +135,9 @@ if len(sys.argv)>1:
   artists.append(n)
 else: 
  for k in range(popsize):
-  n = hyperneat.artist()
+  n = ad.ad_genome() #hyperneat.artist()
   n.fitness=0
   n.gen="orig"
-  n.render_picture()
-  n.behavior=numpy.array(nov_crit.evaluate_artist(n))
   artists.append(n)
 
 novgen=False
@@ -153,8 +153,7 @@ while(not quit):
    #cur_obj.artists[k].optimize(cur_obj.critic)
  for k in range(popsize):
   if(render_art):
-   render_artist(25+(k%gs)*180,25+(k/gs)*180,PXS,artists[k])
-   artists[k].behavior=numpy.array(nov_crit.evaluate_artist(artists[k]))
+   render_artist(25+(k%gs)*230,25+(k/gs)*230,PXS,artists[k])
    #print k,artists[k].behavior,((artists[k].behavior-artists[0].behavior)**2).sum()
  if(render):
   screen.blit(background,(0,0))
@@ -186,8 +185,6 @@ while(not quit):
      for k in range(popsize):
       n=make_new(artist)
       n.fitness=1.0
-      n.render_picture()
-      n.behavior=numpy.array(nov_crit.evaluate_artist(n))
       n.gen="reg"
       artists.append(n)
     

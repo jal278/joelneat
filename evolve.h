@@ -154,7 +154,7 @@ public:
    for(int i=0;i<SX*SY;i++)
     buffers[j][i]=0.0;
  }
-
+ void clear() { clear_picture(); }
  void clear_picture() {
   for (int i=0;i<SX*SY;i++)
    buffer[i]=0.0;

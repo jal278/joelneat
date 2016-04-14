@@ -64,8 +64,10 @@ def make_choices(dims,maxv):
    index[st-1]+=1
    st-=1 
  return indexs
+
 import numpy
 import cPickle as pickle
+
 def make_db():
  feature_set=[]
  for k in range(1,5):

@@ -72,6 +72,7 @@ int gen_buffer(double* buf, CPPN* c,int sx, int sy)
       for (int x=0;x<sx;x++) {
       coordinate[2] = sqrt(coordinate[0]*coordinate[0]+coordinate[1]*coordinate[1]);    
      buf[offset] = (c->query_net(coordinate)+1.0)/2.0;
+     //buf[offset] = fabs(c->query_net(coordinate));
 
      offset++;
      coordinate[0]+=dx;

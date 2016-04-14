@@ -287,7 +287,7 @@ public:
 		}
 		else
 		{
-			weight+=randfloat()*1.0-0.5;
+			weight+=randfloat()*2.0-1.0;
 			if(weight>3.0)
 				weight=3.0;
 			else if (weight<(-3.0))
@@ -472,7 +472,9 @@ class CPPN:public individual
 		for(int x=0;x<connections.size();x++)
 			c.push_back(connections[x]->Copy(n));
 
-		return new CPPN(i,o,innovation,n,c,trivial_weight);
+		CPPN* ret = new CPPN(i,o,innovation,n,c,trivial_weight);
+		ret->not_recurrent=true;
+		return ret; 
 	}
 	virtual ~CPPN()
 	{
@@ -655,16 +657,16 @@ class CPPN:public individual
 		{
 //FIXME: MUTATION IS CRAZY HIGH, SHOULD BE SEPARATE PARAMETERRRR
 		//add_link mutation
-		if (chance(0.1))
+		if (chance(0.3))
 			 mutate_add_link();
 		
 		//add_node mutation
-		if (chance(0.05))
+		if (chance(0.15))
 			mutate_add_node();
 
 	
 		for(int x=0;x<connections.size();x++)
-			if(chance(0.6))
+			if(chance(0.7))
 				connections[x]->mutate();
 		}	
 
@@ -911,6 +913,8 @@ class CPPN:public individual
 		if (!doc.LoadFile()) return NULL;
 		CPPN* newcppn = CPPN::load(doc.FirstChildElement("CPPN"));
 		//CPPN* newcppn = CPPN::load(doc.FirstChildElement("CPPN"),substrate_list);
+	        newcppn->not_recurrent =true;
+		cout << "NOT RECURRENT " << newcppn->not_recurrent << endl;
 		return newcppn;
 	}
 

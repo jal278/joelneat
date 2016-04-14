@@ -2,26 +2,25 @@ import os
 import hyperneat
 import random
 from art_basics import *
+import ad
 
 SX=SY=64
 PXS = 2
 
-a=hyperneat.artist()
-a.random_seed()
-
-import render as r2
 def mk_new(fname):
- n=hyperneat.artist()
+ n=ad.ad_genome()
  n.save(fname)
 def clone(inf,outf):
  os.system("cp %s %s" % (inf,outf))
 def mutate(inf,outf):
-  n=hyperneat.artist.load(inf)
+  n=ad.ad_genome.load(inf)
   n.mutate()
   n.save(outf)
+
 import subprocess
 def render(inf,outf):
- r2.render(inf,outf)
+ a=ad.ad_genome.load(inf)
+ a.render(outf)
  params = ['convert',outf,"-scale","128x128","-bordercolor","#0000FF","-border","2",outf]
  subprocess.check_call(params)
 
