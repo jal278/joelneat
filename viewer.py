@@ -122,8 +122,10 @@ def observe_(k,hists,sz):
 
 #hists=load_hist()
 if(__name__=='__main__'):
- #make_db()
- hists = load_hist() # pickle.load(a)
+
+ make_db()
+ #hists = load_hist() # pickle.load(a)
+
 
  """
  fn="arc_behaviorlist"
